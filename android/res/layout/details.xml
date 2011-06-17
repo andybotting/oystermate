@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/home_root"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <LinearLayout style="@style/TitleBar">
+    
+        <ImageView style="@style/TitleBarLogo"
+            android:src="@drawable/title_small" />
+
+        <View style="@style/TitleBarSpring" />
+
+		<ImageView style="@style/TitleBarSeparator" />
+
+        <ImageButton android:id="@+id/btn_title_refresh"
+			style="@style/TitleBarAction"
+			android:src="@drawable/ic_title_refresh"
+			android:onClick="onRefreshClick" />
+    
+		<ProgressBar android:id="@+id/title_refresh_progress"
+			style="@style/TitleBarProgressIndicator"
+			android:visibility="gone" />
+
+    </LinearLayout>
+
+
+	<!-- Loading Spinner -->
+	<LinearLayout
+        android:id="@+id/loading_view"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+       	android:layout_weight="1"
+        android:gravity="center"
+        android:visibility="gone">
+        
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="6dip"
+            android:indeterminate="true"/>
+            
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_small"
+            android:text="@string/fetching_data" />
+            
+    </LinearLayout>  
+
+
+
+	<!-- Message View -->
+	<LinearLayout android:id="@+id/message_view"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+       	android:layout_weight="1"
+        android:gravity="center"
+        android:visibility="gone">
+        
+        <TextView android:id="@+id/message_view_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_small" />
+            
+    </LinearLayout>  
+
+
+	<!-- Main view -->
+	<ScrollView android:id="@+id/oyster_details_scroll_view"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:scrollbars="none">
+    
+		<LinearLayout android:id="@+id/oyster_details_view"
+			android:orientation="vertical"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1">
+
+		    <!-- Card overview -->
+			<TextView android:id="@+id/card_overview_heading"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:padding="5dip"
+				style="@style/TextHeader"			
+				android:text="Card overview"/>
+			
+			<LinearLayout android:id="@+id/card_overview_layout"
+				android:orientation="vertical"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:paddingLeft="10dip"
+				android:paddingRight="10dip">		
+		    
+			    <TextView android:id="@+id/welcome"
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					style="@style/TextItem" />
+			    
+			    <TextView android:id="@+id/card_number"
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					style="@style/TextItem" />
+
+			</LinearLayout>
+				
+				
+				
+			<!--  Pay as you go -->	
+			<TextView android:id="@+id/payg_heading"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:padding="5dip"
+				style="@style/TextHeader"
+				android:text="Pay as you go" />
+				
+			<LinearLayout android:id="@+id/payg_layout"
+				android:orientation="horizontal"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:paddingLeft="10dip"
+				android:paddingRight="10dip">			
+				
+				<TextView android:id="@+id/payg_balance"
+					android:layout_width="0dip"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					style="@style/TextItem" />
+									
+				<Button android:id="@+id/button_add_topup"
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content"
+					android:layout_below="@+id/payg_balance"
+					android:text="@string/add_topup"
+					android:background="@drawable/wp_button"
+					android:onClick="onAddTopUpClick"/>				
+
+			</LinearLayout>	
+
+
+
+			<!-- Auto Top-up -->	
+			<TextView android:id="@+id/autotopup_heading"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:padding="5dip"
+				style="@style/TextHeader"
+				android:text="Auto Top-Up" />
+	
+			<LinearLayout android:id="@+id/auto_topup_layout"
+				android:orientation="horizontal"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:paddingLeft="10dip"
+				android:paddingRight="10dip">			
+				
+				<TextView android:id="@+id/auto_topup"
+					android:layout_width="0dip"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					style="@style/TextItem" />
+					
+				<Button android:id="@+id/button_manage_autotopup"
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content"
+					android:layout_below="@+id/auto_topup"
+					android:text="@string/manage_autotopup"
+					android:background="@drawable/wp_button"
+					android:onClick="onManageAutoTopUpClick"/>	
+								
+			</LinearLayout>
+				
+				
+				
+			<!-- Season ticket -->
+			<TextView android:id="@+id/season_heading"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:padding="5dip"
+				style="@style/TextHeader"
+				android:text="Season tickets" />
+								
+			<LinearLayout android:id = "@+id/season_layout"
+				android:orientation="vertical"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:paddingLeft="10dip"
+				android:paddingRight="10dip"	
+				android:layout_weight="1">	
+			    
+				<TextView android:id="@+id/season_ticket_message"
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					style="@style/TextItem"
+					android:visibility="gone" />
+					
+				<LinearLayout android:id = "@+id/travel_cards_layout"
+					android:orientation="vertical"
+					android:layout_height="wrap_content"
+					android:layout_width="fill_parent">
+				</LinearLayout>	
+						
+			</LinearLayout>	
+				
+				
+	    </LinearLayout>
+    
+    </ScrollView>
+    
+</LinearLayout>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/home_root"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <LinearLayout style="@style/TitleBar">
+    
+        <ImageView style="@style/TitleBarLogo"
+            android:src="@drawable/title_small" />
+
+        <View style="@style/TitleBarSpring" />
+
+		<ProgressBar android:id="@+id/title_refresh_progress"
+			style="@style/TitleBarProgressIndicator"
+			android:visibility="gone" />
+
+    </LinearLayout>
+    
+	<WebView  xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/webview"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent" />
+	    
+</LinearLayout>	    

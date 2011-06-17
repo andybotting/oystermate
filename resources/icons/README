@@ -1,0 +1,7 @@
+This folder contains the icons for the Android application.
+
+It also contains a gen_icons.sh shell script which generates HDPI, MDPI
+and LDPI sized-icons into the application.
+
+It requires Imagemagick for getting image dimensions and Inkscape for
+the icon generation from SVG to PNGs.

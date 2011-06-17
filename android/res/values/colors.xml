@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright 2010 Andy Botting <andy@andybotting.com>  
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+     
+    This file is distributed in the hope that it will be useful, but  
+    WITHOUT ANY WARRANTY; without even the implied warranty of  
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
+    General Public License for more details.  
+     
+    You should have received a copy of the GNU General Public License  
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+    
+    This file incorporates work covered by the following copyright and  
+    permission notice:
+
+    Copyright 2010 Google Inc.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<resources>
+    <color name="title_background">#ff355689</color>
+    <color name="title_text">#ffffffff</color>
+    <color name="title_text_alt">#ff000000</color>
+    <color name="title_separator">#40ffffff</color>
+    
+    <color name="foreground1">#ff355689</color>
+    <color name="foreground2">#ff7081a3</color>
+    <color name="background1">#ffffffff</color>
+    <color name="background2">#ffd5ddeb</color>
+    <color name="background3">#ffe3e8f1</color>
+
+    <drawable name="white">#ffffffff</drawable>
+	<drawable name="black">#ff000000</drawable>
+	<drawable name="gray">#ff606060</drawable>
+	<drawable name="aqua">#ff007bff</drawable>
+	<drawable name="red">#ffff0000</drawable>
+
+</resources>
