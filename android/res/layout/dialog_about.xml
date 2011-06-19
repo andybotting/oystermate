@@ -32,27 +32,25 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<resources>
-    <string name="app_name">Oyster Mate</string>
-    <string name="about_msg">An Android client for viewing and mangaing your OysterCard.\n\nhttps://github.com/andybotting/oystermate\n\nLatest changes in v0.1\n - Initial release.\n - Show balance, auto top-up and any season tickets\n - Manage season tickets and top-up via TfL site through app.\n\nPlease file bug reports and feature requests at the OysterMate project GitHub site at:\nhttps://github.com/andybotting/oystermate/issues\n\nThis application is provided with no warranty and is open source, licensed under the GPLv3.\n</string>
-    
-    
-	
-	<!-- OysterDetails -->
-	<string name="signing_in">Signing in...</string>
-	<string name="fetching_data">Fetching OysterCard details...</string>
-	<string name="menu_info">About</string>
-	<string name="menu_logout">Log out</string>
-	<string name="menu_refresh">Refresh</string>
-	<string name="manage_autotopup">Manage Auto Top-Up</string>
-	<string name="add_topup">Top-up OysterCard</string>
-	<string name="label_loading">Loading...</string>
-			
-	<!-- Login -->
-	<string name="login_info">Please sign in with your TfL Oyster Card login details.\nIf you don\'t already have an account, click \'Sign Up\' to create one with your Oyster Card ID number.</string>
-	<string name="username">Username:</string>
-	<string name="password">Password:</string>
-	<string name="button_sign_in">Sign In</string>
-	<string name="button_sign_up">Sign Up</string>
+<ScrollView 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent">
 
-</resources>
+    <LinearLayout 
+        android:layout_width="fill_parent" 
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <TextView 
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" 
+            android:id="@+id/about_msg" 
+            android:text="@string/about_msg"
+            android:autoLink="web"
+            android:padding="10dip"
+            style="@style/DialogTextSmall" />
+
+    </LinearLayout>
+</ScrollView>
+    

@@ -4,9 +4,9 @@ import com.andybotting.oystermate.R;
 import com.andybotting.oystermate.provider.OysterProvider;
 import com.andybotting.oystermate.provider.OysterProviderException;
 import com.andybotting.oystermate.utils.PreferenceHelper;
+import com.andybotting.oystermate.utils.UIUtils;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -37,22 +37,18 @@ public class Login extends Activity {
 					new GetDocument().execute();
 			}
 	    });  
+        
+        final Button signUpButton = (Button) findViewById(R.id.button_sign_up);
+        signUpButton.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View v) {
+				UIUtils.lauchWebView(Login.this, "https://oyster.tfl.gov.uk/oyster/link/0004.do");
+			}
+	    });         
+        
     }
     
-	/**
-	 * Show a dialog message
-	 */
-	private void showMessage(String title, String message) {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        if (title != null)
-        	dialogBuilder.setTitle(title);
-        dialogBuilder.setMessage(message);
-        dialogBuilder.setPositiveButton("OK", null);
-        dialogBuilder.setIcon(R.drawable.icon);
-        dialogBuilder.show();
-	}
-    
-	/**
+
+    /**
 	 * Simple check that username and password are filled out
 	 */
 	protected Boolean basicCredentialsCheck() {
@@ -62,7 +58,7 @@ public class Login extends Activity {
 		if ( (username.length() > 2) && (password.length() > 2) )
 			return true;
 
-		showMessage("Error", "Please enter your username and password");
+		UIUtils.showMessage(Login.this, "Error", "Please enter your username and password");
 		
 		return false;
 	}
@@ -129,7 +125,7 @@ public class Login extends Activity {
 		protected void onPostExecute(String document) {
 			pd.dismiss();
 			if (mErrorMessage != null) {
-				showMessage("Login Error", mErrorMessage);
+				UIUtils.showMessage(Login.this, "Login Error", mErrorMessage);
 			}
 			else {
 				// Success

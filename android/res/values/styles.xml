@@ -133,4 +133,14 @@
         <item name="android:paddingBottom">6dip</item>
     </style>    
     
+    <style name="DialogTextMedium">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+    
+    <style name="DialogTextSmall">
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+    
 </resources>

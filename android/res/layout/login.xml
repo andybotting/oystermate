@@ -15,7 +15,7 @@
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content" 
 		android:text="@string/username"
-		android:layout_below="@id/image_title"/>
+		android:layout_below="@+id/image_title"/>
               
 	<EditText android:id="@+id/username" 
 		android:layout_width="fill_parent" 
@@ -41,12 +41,27 @@
 		android:password="true"
 		android:layout_below="@id/label_password"/>    
 	
-	<Button
+	<Button android:id="@+id/button_sign_in"
 		android:layout_width="wrap_content" 
 		android:layout_height="wrap_content"
-		android:id="@+id/button_sign_in"
-		android:text="@string/sign_in"
+		android:text="@string/button_sign_in"
 		android:layout_below="@id/password"
 		android:background="@drawable/wp_button"/>
+		
+	<Button android:id="@+id/button_sign_up"
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		android:text="@string/button_sign_up"
+		android:layout_below="@id/password"
+		android:layout_toRightOf="@id/button_sign_in"
+		android:background="@drawable/wp_button"/>	
+		
+	<TextView android:id="@+id/info_text" 
+		android:textColor="#444444" 
+		android:layout_marginTop="10dip"	
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content" 
+		android:text="@string/login_info"
+		android:layout_below="@+id/button_sign_in"/>		
            
 </RelativeLayout>

@@ -34,11 +34,18 @@
 
 package com.andybotting.oystermate.utils;
 
+import com.andybotting.oystermate.R;
+import com.andybotting.oystermate.activity.WebLaunch;
+
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.widget.Toast;
 
-public class UIUtils {
 
+public class UIUtils {
+	
     /**
      * Helper for creating toasts. You could call it a toaster.
      */
@@ -48,4 +55,32 @@ public class UIUtils {
     	toast.show();	
     }
     
+    
+	/**
+	 * Show a dialog message
+	 */
+	public static void showMessage(Context context, String title, String message) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+        if (title != null)
+        	dialogBuilder.setTitle(title);
+        dialogBuilder.setMessage(message);
+        dialogBuilder.setPositiveButton("OK", null);
+        dialogBuilder.setIcon(R.drawable.ic_dialog_alert);
+        dialogBuilder.show();
+	}
+    
+	
+    /**
+     * Launch the web view with the given URL
+     * @param url
+     */
+    public static void lauchWebView(Context context, String url) {
+		Bundle bundle = new Bundle();
+		bundle.putString(WebLaunch.INTENT_URL, url);
+		Intent intent = new Intent(context, WebLaunch.class);
+		intent.putExtras(bundle);
+		context.startActivity(intent);   	
+    }
+	
+	
 }

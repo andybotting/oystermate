@@ -4,11 +4,16 @@ import com.andybotting.oystermate.objects.OysterCard;
 import com.andybotting.oystermate.objects.TravelCard;
 import com.andybotting.oystermate.provider.OysterProvider;
 import com.andybotting.oystermate.utils.PreferenceHelper;
+import com.andybotting.oystermate.utils.UIUtils;
+import com.andybotting.oystermate.OysterMate;
 import com.andybotting.oystermate.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -24,8 +29,9 @@ public class OysterDetails extends Activity {
 	public static final String TFL_URL = "https://oyster.tfl.gov.uk";
 	
 	// Menu items
-	private static final int MENU_SIGN_OUT = 0;
-	private static final int MENU_REFRESH = 1;
+	private static final int MENU_INFO = 0;
+	private static final int MENU_SIGN_OUT = 1;
+	private static final int MENU_REFRESH = 2;
 	
 	private PreferenceHelper mPreferenceHelper;
 	private OysterProvider mProvider;
@@ -64,29 +70,49 @@ public class OysterDetails extends Activity {
      * Handle Manage auto top-up click
      */
     public void onManageAutoTopUpClick(View v) {
-    	lauchWebView(TFL_URL + mOysterCard.getManageAutoTopUpURL());
+    	UIUtils.lauchWebView(this, TFL_URL + mOysterCard.getManageAutoTopUpURL());
     }
     
     /** 
      * Handle Add Top-up click 
      */
     public void onAddTopUpClick(View v) {
-		lauchWebView(TFL_URL + mOysterCard.getAddTopUpURL());
+    	UIUtils.lauchWebView(this, TFL_URL + mOysterCard.getAddTopUpURL());
 
     }    
     
     
     /**
-     * Launch the web view with the given URL
-     * @param url
+     * Show about dialog window
      */
-    public void lauchWebView(String url) {
-		Bundle bundle = new Bundle();
-		bundle.putString(WebLaunch.INTENT_URL, url);
-		Intent intent = new Intent(OysterDetails.this, WebLaunch.class);
-		intent.putExtras(bundle);
-		startActivity(intent);   	
-    }
+	public void showAbout() {
+		// Get the package name
+		String heading = getResources().getText(R.string.app_name) + "\n";
+
+		try {
+            PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+			heading += "v" + pi.versionName + "\n\n";
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		// Build alert dialog
+		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+		dialogBuilder.setTitle(heading);
+		View aboutView = getLayoutInflater().inflate(R.layout.dialog_about, null);
+		dialogBuilder.setView(aboutView);
+		dialogBuilder.setPositiveButton("OK",
+			new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					dialog.dismiss();
+				}
+			});
+		dialogBuilder.setCancelable(false);
+		dialogBuilder.setIcon(R.drawable.ic_dialog_info);
+		dialogBuilder.show();
+	}
+    
+
         
     
     /**
@@ -129,10 +155,13 @@ public class OysterDetails extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		
-		menu.add(0, MENU_SIGN_OUT, 0, R.string.logout)
+		menu.add(0, MENU_INFO, 0, R.string.menu_info)
+			.setIcon(R.drawable.ic_menu_info_details);		
+		
+		menu.add(0, MENU_SIGN_OUT, 0, R.string.menu_logout)
 			.setIcon(R.drawable.ic_menu_logout);
 		
-		menu.add(0, MENU_REFRESH, 0, R.string.refresh)
+		menu.add(0, MENU_REFRESH, 0, R.string.menu_refresh)
 			.setIcon(R.drawable.ic_menu_refresh);
 	
 		return true;
@@ -146,6 +175,9 @@ public class OysterDetails extends Activity {
 	public boolean onOptionsItemSelected(final MenuItem item) {
 		
 		switch (item.getItemId()) {
+			case MENU_INFO:
+				showAbout();
+				return true;
 			case MENU_SIGN_OUT:
 				mPreferenceHelper.clearCredentials();
 				kickOff();
@@ -183,20 +215,6 @@ public class OysterDetails extends Activity {
 		findViewById(R.id.title_refresh_progress).setVisibility(isRefreshing ? View.VISIBLE : View.GONE);
 	}
 
-	
-	/**
-	 * Show a dialog message
-	 */
-	private void showMessage(String title, String message) {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        if (title != null)
-        	dialogBuilder.setTitle(title);
-        dialogBuilder.setMessage(message);
-        dialogBuilder.setPositiveButton("OK", null);
-        dialogBuilder.setIcon(R.drawable.icon);
-        dialogBuilder.show();
-	}
-	
 	
 	/**
 	 * Display oyster card details
@@ -241,7 +259,7 @@ public class OysterDetails extends Activity {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			showMessage("OysterMate Error", "There was an error showing the results:\n" + e.toString());
+			UIUtils.showMessage(OysterDetails.this, "OysterMate Error", "There was an error showing the results:\n" + e.toString());
 		}
 	}
 	
@@ -257,6 +275,7 @@ public class OysterDetails extends Activity {
 		((TextView) detailView.findViewById(R.id.travelcard_date)).setText(travelCard.getDateString());
 		return detailView;
 	}
+
 	
     /**
      * Background task for fetching tram times
@@ -266,7 +285,6 @@ public class OysterDetails extends Activity {
 		@Override
 		protected void onPreExecute() {
 			mErrorMessage = null;
-			//pd = ProgressDialog.show(OysterDetails.this, "", getResources().getText(R.string.fetching_data), true, false);
 			updateRefreshStatus(true);
 		}
 
@@ -287,11 +305,10 @@ public class OysterDetails extends Activity {
 
 		@Override
 		protected void onPostExecute(OysterCard oysterCard) {
-			//pd.dismiss();
 			updateRefreshStatus(false);
 
 			if (mErrorMessage != null) {
-				showMessage("OysterMate Error", "There was an error fetching your Oyster card details: \n" + mErrorMessage);
+				UIUtils.showMessage(OysterDetails.this, "OysterMate Error", "There was an error fetching your Oyster card details: \n" + mErrorMessage);
 				displayNoResults("No Results.");
 			}
 			else {
