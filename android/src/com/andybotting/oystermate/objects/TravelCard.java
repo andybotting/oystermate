@@ -60,7 +60,7 @@ public class TravelCard {
 		float start = startDate.getTime();
 		float end = endDate.getTime();
 		float now = new Date().getTime();
-		int percentage = (int)((end - now)/(end - start) * 100);
+		int percentage = (int)((now - start)/(end - start) * 100);
 		return percentage;
 	}
 	

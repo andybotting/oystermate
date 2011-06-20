@@ -5,7 +5,6 @@ import com.andybotting.oystermate.objects.TravelCard;
 import com.andybotting.oystermate.provider.OysterProvider;
 import com.andybotting.oystermate.utils.PreferenceHelper;
 import com.andybotting.oystermate.utils.UIUtils;
-import com.andybotting.oystermate.OysterMate;
 import com.andybotting.oystermate.R;
 
 import android.app.Activity;

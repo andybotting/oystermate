@@ -70,7 +70,6 @@ public class OysterProvider {
 	 */
 	public String getAutoTopUp(String document) {
 		return searchItem(">Auto top up:.*?&#163;(\\d+\\.\\d+)", document);
-		
 	}
 	
 	
@@ -236,20 +235,23 @@ public class OysterProvider {
 		String seasonTicketMessage = getSeasonTicketMessage(document);
 		List<TravelCard> travelCards = getTravelCards(document);
 		
-		try {
-			double paygBalance = Double.parseDouble(paygBalanceS);
-			oysterCard.setPayAsYouGoBalance(paygBalance);
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-			// Nothing
+		if (paygBalanceS != null) {
+			try {
+				double paygBalance = Double.parseDouble(paygBalanceS);
+				oysterCard.setPayAsYouGoBalance(paygBalance);
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
 		}
 		
-		try { 
-			double autoTopUp = Double.parseDouble(autoTopUpS);
-			oysterCard.setAutoTopUp(autoTopUp);
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-			// Nothing
+		if (autoTopUpS != null) {
+			try { 
+				double autoTopUp = Double.parseDouble(autoTopUpS);
+				oysterCard.setAutoTopUp(autoTopUp);
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+				// Nothing
+			}
 		}
 		
 		oysterCard.setWelcome(welcome);
