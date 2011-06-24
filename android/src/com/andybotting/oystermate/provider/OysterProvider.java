@@ -15,7 +15,6 @@ import android.util.Log;
 import com.andybotting.oystermate.objects.OysterCard;
 import com.andybotting.oystermate.objects.TravelCard;
 import com.andybotting.oystermate.provider.HttpConnection;
-import com.andybotting.oystermate.utils.PreferenceHelper;
 
 public class OysterProvider {
 
@@ -24,7 +23,16 @@ public class OysterProvider {
 
 	private Pattern pattern;
 	private Matcher matcher;
+
+	public static final String LOGIN_POST_URL = "https://oyster.tfl.gov.uk/oyster/security_check";
+	public static final String LOGGED_IN_URL = "https://oyster.tfl.gov.uk/oyster/entry.do";
+	public static final String DETAILS_URL = "https://oyster.tfl.gov.uk/oyster/loggedin.do";
+	public static final String JOURNEY_HISTORY_URL = "https://oyster.tfl.gov.uk/oyster/ppvStatementPrint.do";
 	
+	
+//	private String mDetailsDocument = null;
+//	private String mJourneyHistoryDocument = null;
+		
 	
 	/**
 	 * Search for one instance of a string
@@ -91,6 +99,17 @@ public class OysterProvider {
 	 */
 	public String getSeasonTicketMessage(String document) {
 		return searchItem("<h3>Season tickets</h3>.*?<span class=\"content\">(.*?)</span>", document);
+	}
+	
+	
+	/**
+	 * Get the season ticket message 
+	 * @param document
+	 * @return String
+	 * @throws OysterProviderException
+	 */
+	public String getErrorMessage(String document) {
+		return searchItem("<div id=\"errormessage\"><ul><li>(.*?)</li></ul></div>", document);
 	}	
 	
 	
@@ -224,7 +243,7 @@ public class OysterProvider {
 	public OysterCard getOysterCard() throws IOException, OysterProviderException {
 		
 		OysterCard oysterCard = new OysterCard();
-		String document = getDocumentContent();
+		String document = getOysterCardDetailsPage();
 		
 		String welcome = getWelcomeMessage(document);
 		String cardNumber = getCardNo(document);
@@ -267,15 +286,37 @@ public class OysterProvider {
 	
 	
 	/**
-	 * Get the document content using saved credentials
-	 * @throws IOException
+	 * Get the Oyster card details web page
+	 */
+	public String getOysterCardDetailsPage() throws IOException, OysterProviderException {
+		return getDocumentContent(DETAILS_URL);
+	}
+	
+	
+	/**
+	 * Get the journey history web page
+	 */
+	public String getJourneyHistoryPage() throws IOException, OysterProviderException {
+		return getDocumentContent(DETAILS_URL);
+	}	
+	
+	
+	/**
+	 * Get the document content specifiying username and password
+	 * @throws IOException 
 	 * @throws OysterProviderException 
 	 */
-	public String getDocumentContent() throws IOException, OysterProviderException {
-		PreferenceHelper preferenceHelper = new PreferenceHelper();
-		String username = preferenceHelper.getUsername();
-		String password = preferenceHelper.getPassword();
-		return getDocumentContent(username, password);
+	public String performLogin(String username, String password) throws IOException, OysterProviderException {
+		if (LOGV) Log.i(TAG, "Logging in...");
+		
+		HttpConnection httpConn = new HttpConnection();
+		String document = httpConn.performLogin(username, password);
+
+		String errorMessage = getErrorMessage(document);
+		if (errorMessage != null)
+			throw new OysterProviderException(errorMessage);
+
+		return document;
 	}
 	
 	
@@ -284,18 +325,17 @@ public class OysterProvider {
 	 * @throws IOException 
 	 * @throws OysterProviderException 
 	 */
-	public String getDocumentContent(String username, String password) throws IOException, OysterProviderException {
+	public String getDocumentContent(String url) throws IOException, OysterProviderException {
 		if (LOGV) Log.i(TAG, "Getting web page content...");
 		
 		HttpConnection httpConn = new HttpConnection();
-		String document = httpConn.fetchDocument(username, password);
-
-		matcher = Pattern.compile("<div id=\"errormessage\"><ul><li>(.*?)</li></ul></div>").matcher(document);
-		if (matcher.find())
-			throw new OysterProviderException(matcher.group(1).toString());
+		String document = httpConn.fetchDocument(url);
+		
+		String errorMessage = getErrorMessage(document);
+		if (errorMessage != null)
+			throw new OysterProviderException(errorMessage);
 
 		return document;
-
 	}
 	
 }

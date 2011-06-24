@@ -68,7 +68,7 @@ public class Login extends Activity {
 	 */
 	protected String getUsernameField() {
 	    EditText usernameField = (EditText)findViewById(R.id.username);
-	    return usernameField.getText().toString();		
+	    return usernameField.getText().toString().trim();		
 	}
 
 	
@@ -77,7 +77,7 @@ public class Login extends Activity {
 	 */
 	protected String getPasswordField() {
 	    EditText passwordField = (EditText)findViewById(R.id.password);
-	    return passwordField.getText().toString();
+	    return passwordField.getText().toString().trim();
 	}
 
 	
@@ -90,9 +90,8 @@ public class Login extends Activity {
     }
     
     
-    
     /**
-     * Background task for fetching tram times
+     * Background task for fetching document
      */
 	private class GetDocument extends AsyncTask<Void, Void, String> {
 
@@ -106,9 +105,9 @@ public class Login extends Activity {
 		protected String doInBackground(final Void... params) {
 			String document = null;
 			try {
-				document = mProvider.getDocumentContent(getUsernameField(), getPasswordField());
+				document = mProvider.performLogin(getUsernameField(), getPasswordField());
 				if (document == null) 
-					mErrorMessage = "Unknown error :(";
+					mErrorMessage = "Error Signing in.";
 			} 
 	    	catch (OysterProviderException e) {
 	    		mErrorMessage = e.getMessage();

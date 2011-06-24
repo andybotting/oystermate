@@ -31,37 +31,57 @@ public class PreferenceHelper {
 			
 	}
 	
-    /**
-     * Return the username
-     */
+	/**
+	 * Return the username
+	 */
 	public String getUsername() {
 		return preferences.getString(KEY_USERNAME, null);
 	}
 	
-    /**
-     * Return the password
-     */
+	/**
+	 * Return the password
+	 */
 	public String getPassword() {
 		return preferences.getString(KEY_PASSWORD, null);
 	}
 	
 	
-    /**
-     * Return the cookie
-     */
+	/**
+	 * Return the cookie
+	 */
 	public String getSessionId() {
 		return preferences.getString(KEY_SESSION_ID, null);
 	}
 	
 
-    /**
-     * Set the Session ID
-     */	
+	/**
+	 * Set the Session ID
+	 */	
 	public void setSessionId(String sessionId) {
 		SharedPreferences.Editor editor = preferences.edit();	
 		editor.putString(KEY_SESSION_ID, sessionId);
 		editor.commit();
 	}	
+	
+	
+	/**
+	 * Clear the Session ID
+	 */	
+	public void clearSessionId() {
+		SharedPreferences.Editor editor = preferences.edit();	
+		editor.putString(KEY_SESSION_ID, null);
+		editor.commit();
+	}
+	
+
+	/**
+	 * Has the Session ID
+	 */	
+	public boolean hasSessionId() {
+		if (preferences.getString(KEY_SESSION_ID, null) == null)
+			return false;
+		return true;
+	}
 	
 	
 	/**
@@ -74,9 +94,9 @@ public class PreferenceHelper {
 		editor.commit();		
 	}
 	
-    /**
-     * Set a string representing the GUID
-     */	
+	/**
+	 * Set a string representing the GUID
+	 */	
 	public void setCredentials(String username, String password) {
 		SharedPreferences.Editor editor = preferences.edit();	
 		editor.putString(KEY_USERNAME, username);
