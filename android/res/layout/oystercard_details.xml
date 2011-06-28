@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/home_root"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <LinearLayout style="@style/TitleBar">
+    
+        <ImageView style="@style/TitleBarLogo"
+            android:src="@drawable/title_small" />
+
+        <View style="@style/TitleBarSpring" />
+
+		<ImageView style="@style/TitleBarSeparator" />
+
+        <ImageButton android:id="@+id/btn_title_refresh"
+			style="@style/TitleBarAction"
+			android:src="@drawable/ic_title_refresh"
+			android:onClick="onRefreshClick" />
+    
+		<ProgressBar android:id="@+id/title_refresh_progress"
+			style="@style/TitleBarProgressIndicator"
+			android:visibility="gone" />
+
+    </LinearLayout>
+
+
+	<!-- Loading Spinner -->
+	<LinearLayout
+        android:id="@+id/loading_view"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+       	android:layout_weight="1"
+        android:gravity="center"
+        android:visibility="gone">
+        
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="6dip"
+            android:indeterminate="true"/>
+            
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_small"
+            android:text="@string/fetching_data" />
+            
+    </LinearLayout>  
+
+
+
+	<!-- Message View -->
+	<LinearLayout android:id="@+id/message_view"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+       	android:layout_weight="1"
+        android:gravity="center"
+        android:visibility="gone">
+        
+        <TextView android:id="@+id/message_view_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_small" />
+            
+    </LinearLayout>  
+
+
+	<!-- Main view -->
+	<ScrollView android:id="@+id/oyster_details_scroll_view"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:scrollbars="none">
+    
+		<LinearLayout android:id="@+id/oyster_details_view"
+			android:orientation="vertical"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1" />
+    
+    </ScrollView>
+    
+</LinearLayout>
