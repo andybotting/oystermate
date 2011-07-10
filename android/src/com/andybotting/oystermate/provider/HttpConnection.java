@@ -18,10 +18,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
-import com.andybotting.oystermate.activity.OysterDetails;
 import com.andybotting.oystermate.utils.PreferenceHelper;
 
 import android.util.Log;
@@ -35,6 +36,9 @@ public class HttpConnection {
 	
 	private PreferenceHelper mPreferenceHelper;
 	
+	private static final int HTTP_CONNECTION_TIMEOUT = 3000;
+	private static final int HTTP_SOCKET_TIMEOUT = 3000;
+	
 	/**
 	 * 
 	 */
@@ -44,13 +48,18 @@ public class HttpConnection {
 
 	
 	/**
-	 * HTTP fetch for a URL
+	 * HTTP GET a URL
 	 */
-	public String fetchDocument(String url) throws IOException {
+	public String getURL(String url) throws IOException {
 		if (LOGV) Log.i(TAG, "Fetching Document...");
 		String output = null;
 		
-		DefaultHttpClient httpClient = new DefaultHttpClient();
+
+        HttpParams httpParameters = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(httpParameters, HTTP_CONNECTION_TIMEOUT);
+        HttpConnectionParams.setSoTimeout(httpParameters, HTTP_SOCKET_TIMEOUT);
+        
+        DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
 		
 		// Don't handle 302 redirects automatically. We want to test for it
 		httpClient.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
@@ -59,13 +68,13 @@ public class HttpConnection {
 	    httpGet.setHeader("User-Agent", USER_AGENT);
 	    httpGet.setHeader("Cookie", "JSESSIONID=" + mPreferenceHelper.getSessionId());
 
-	    HttpResponse response = httpClient.execute(httpGet);
+	    HttpResponse httpResponse = httpClient.execute(httpGet);
 	    
-	    int responseCode = response.getStatusLine().getStatusCode();
+	    int responseCode = httpResponse.getStatusLine().getStatusCode();
 	    if (LOGV) Log.i(TAG, "Return code for " + url + " is: " + responseCode);
 	    
 	    String location = null;
-	    for (Header header : response.getAllHeaders()) {
+	    for (Header header : httpResponse.getAllHeaders()) {
 	    	if (header.getName().matches("Location"))
 	    		location = header.getValue();
 	    }
@@ -74,10 +83,10 @@ public class HttpConnection {
         	// Do a login to get the session cookie
         	performLogin();
         	if (mPreferenceHelper.hasSessionId())
-        		return fetchDocument(url);
+        		return getURL(url);
         }	    
 
-		HttpEntity entity = response.getEntity();
+		HttpEntity entity = httpResponse.getEntity();
 		output = convertStreamToString(entity.getContent());	
 		
 		//System.out.println(output);
@@ -85,7 +94,35 @@ public class HttpConnection {
 	}
 	
 	
+	/**
+	 * HTTP POST a URL with given data
+	 */
+	public String postURL(String URL, List<NameValuePair> nameValuePairs) throws IOException {
+		String output = null;
+        
+        HttpParams httpParameters = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(httpParameters, HTTP_CONNECTION_TIMEOUT);
+        HttpConnectionParams.setSoTimeout(httpParameters, HTTP_SOCKET_TIMEOUT);
+
+        DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+        
+	    HttpPost httpPost = new HttpPost(OysterProvider.SELECT_CARD_URL);
+	    httpPost.setHeader("User-Agent", USER_AGENT);
+	    httpPost.setHeader("Cookie", "JSESSIONID=" + mPreferenceHelper.getSessionId());
+		httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+		
+		HttpResponse httpResponse = httpClient.execute(httpPost);
+			
+		// Perform the http request, and forget about the output
+		HttpEntity entity = httpResponse.getEntity();
+		output = convertStreamToString(entity.getContent());
+		
+		System.out.println(output);
+		return output;
+        
+	}
 	
+
 	/**
 	 * Perform a login using stored credentials
 	 */
@@ -108,7 +145,11 @@ public class HttpConnection {
         nameValuePairs.add(new BasicNameValuePair("j_username", username));
         nameValuePairs.add(new BasicNameValuePair("j_password", password));
         
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+        HttpParams httpParameters = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(httpParameters, HTTP_CONNECTION_TIMEOUT);
+        HttpConnectionParams.setSoTimeout(httpParameters, HTTP_SOCKET_TIMEOUT);
+        
+        DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
         
 	    HttpPost httpPost = new HttpPost(OysterProvider.LOGIN_POST_URL);
 	    httpPost.setHeader("User-Agent", USER_AGENT);
@@ -136,29 +177,7 @@ public class HttpConnection {
         
 	}
 	
-	
-	/**
-	 * Build a cookie object from the stored session ID 
-	 * @throws IOException 
-	 */
-	private Cookie getSessionCookie() throws IOException {
-		if (LOGV) Log.d(TAG, "Getting session cookie...");
-		Cookie cookie = null;
-		String sessionId = mPreferenceHelper.getSessionId();
-		
-		if (sessionId != null) {
-			String sessionCookie = "JSESSIONID=" + sessionId + "; domain=oyster.tfl.gov.uk";
-			cookie = new BasicClientCookie(OysterDetails.TFL_URL + "/", sessionCookie);
-		}
-		else {
-			performLogin();
-			return getSessionCookie();
-		}
-		
-		return cookie;
-	}
 
-	
 	/**
 	 * Build a string from the http output 
 	 */

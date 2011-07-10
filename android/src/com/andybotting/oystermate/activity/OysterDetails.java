@@ -1,6 +1,7 @@
 package com.andybotting.oystermate.activity;
 
 import com.andybotting.oystermate.objects.OysterCard;
+import com.andybotting.oystermate.objects.AccountInfo;
 import com.andybotting.oystermate.objects.TravelCard;
 import com.andybotting.oystermate.provider.OysterProvider;
 import com.andybotting.oystermate.utils.PreferenceHelper;
@@ -20,8 +21,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 public class OysterDetails extends Activity {
 	
@@ -34,15 +39,21 @@ public class OysterDetails extends Activity {
 	
 	private PreferenceHelper mPreferenceHelper;
 	private OysterProvider mProvider;
-	private OysterCard mOysterCard;
+	
+	private AccountInfo mAccountInfo;
 
+	private ViewGroup mOysterDetailsView;
+
+	private Spinner mCardsSpinner;
+	private ArrayAdapter<CharSequence> mAdapterForSpinner;
+	
 	private String mErrorMessage;
 	
 	
     @Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);	  
-        setContentView(R.layout.details);
+        setContentView(R.layout.oystercard_details);
                 
         mPreferenceHelper = new PreferenceHelper();
         mProvider = new OysterProvider();
@@ -58,6 +69,7 @@ public class OysterDetails extends Activity {
     	kickOff();
     }
     
+    
     /** 
      * Handle "map" title-bar action. 
      */
@@ -65,19 +77,20 @@ public class OysterDetails extends Activity {
         // nothing yet
     }
     
+    
     /** 
      * Handle Manage auto top-up click
      */
     public void onManageAutoTopUpClick(View v) {
-    	UIUtils.lauchWebView(this, TFL_URL + mOysterCard.getManageAutoTopUpURL());
+    	UIUtils.lauchWebView(this, TFL_URL + mAccountInfo.getManageAutoTopUpURL());
     }
+    
     
     /** 
      * Handle Add Top-up click 
      */
     public void onAddTopUpClick(View v) {
-    	UIUtils.lauchWebView(this, TFL_URL + mOysterCard.getAddTopUpURL());
-
+    	UIUtils.lauchWebView(this, TFL_URL + mAccountInfo.getAddTopUpURL());
     }    
     
     
@@ -123,7 +136,7 @@ public class OysterDetails extends Activity {
         	startActivityForResult(i, 0);
         }
         else {
-        	new GetOysterDetails().execute();
+        	new GetOysterAccountInfo().execute();
         }
     }
 
@@ -137,7 +150,7 @@ public class OysterDetails extends Activity {
 		
 		switch (resultCode) {
 			case Activity.RESULT_OK:
-				new GetOysterDetails().execute();
+				new GetOysterAccountInfo().execute();
 				break;
 			case Activity.RESULT_CANCELED:
 				finish();
@@ -182,7 +195,7 @@ public class OysterDetails extends Activity {
 				kickOff();
 				return true;
 			case MENU_REFRESH:
-				new GetOysterDetails().execute();
+				new GetOysterAccountInfo().execute();
 				return true;
 		}	
 		return false;
@@ -213,48 +226,110 @@ public class OysterDetails extends Activity {
 		findViewById(R.id.btn_title_refresh).setVisibility(isRefreshing ? View.GONE : View.VISIBLE);
 		findViewById(R.id.title_refresh_progress).setVisibility(isRefreshing ? View.VISIBLE : View.GONE);
 	}
+	
 
+    /**
+     * Update refresh status icon/views
+     */
+	private void updateRefreshStatusCard(boolean isRefreshing) {
+		// Main window		
+		findViewById(R.id.oyster_details_view).setVisibility(isRefreshing ? View.GONE : View.VISIBLE);
+		findViewById(R.id.card_loading_view).setVisibility(isRefreshing ? View.VISIBLE : View.GONE);
+		
+		// Refresh button
+		findViewById(R.id.btn_title_refresh).setVisibility(isRefreshing ? View.GONE : View.VISIBLE);
+		findViewById(R.id.title_refresh_progress).setVisibility(isRefreshing ? View.VISIBLE : View.GONE);
+	}
+	
+
+	
+	private void displayOysterDetails(final AccountInfo accountInfo) {
+		
+		if (!accountInfo.hasOysterCards()) {
+			displayNoResults("No OysterCards could be found.");
+		}
+		else {
+			((TextView)findViewById(R.id.welcome)).setText(accountInfo.getWelcome());
+
+			if (accountInfo.hasMultipleOysterCards()) {
+				
+				// If we have more than one card, show the spinner
+				ViewGroup cardSelectView = (ViewGroup)findViewById(R.id.card_select_view);
+				cardSelectView.setVisibility(View.VISIBLE);
+				
+				mAdapterForSpinner = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item);
+				mAdapterForSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				mCardsSpinner = (Spinner)cardSelectView.findViewById(R.id.card_select_spinner);
+				mCardsSpinner.setAdapter(mAdapterForSpinner);
+				
+				for (String oysterCardNumber : accountInfo.getOysterCardNumbers()) {
+					mAdapterForSpinner.add(oysterCardNumber);
+				}
+				
+				mCardsSpinner.setOnItemSelectedListener(
+					new OnItemSelectedListener() {
+						public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+							String oysterCardNumber = mAccountInfo.getOysterCardNumber(position);
+							if (mAccountInfo.hasOysterCard(oysterCardNumber)) {
+								OysterCard oysterCard = mAccountInfo.getOysterCard(position);
+								displayOysterCardDetails(oysterCard);
+							}
+							else {
+								new GetSelectedCardDetails().execute(oysterCardNumber);
+							}
+
+						}
+			
+						public void onNothingSelected(AdapterView<?> parent) {
+							// Nothing
+						}
+							
+					}
+				);
+			}
+			else {
+				// Just one card
+				OysterCard oysterCard = mAccountInfo.getOysterCard(0);
+				displayOysterCardDetails(oysterCard);
+			}
+		}
+	}
+	
 	
 	/**
 	 * Display oyster card details
 	 */
-	private void displayDetails(final OysterCard oysterCard) {
-
-		// Clean up season tickets
-		ViewGroup travelCardsLayout = (ViewGroup) findViewById(R.id.travel_cards_layout);
-		travelCardsLayout.removeAllViews();
+	private void displayOysterCardDetails(OysterCard oysterCard) {
 
 		try {
-			// Set the labels
-			((TextView)findViewById(R.id.welcome)).setText(oysterCard.getWelcome());
-			((TextView)findViewById(R.id.card_number)).setText("Card Number: " + oysterCard.getCardNumber());
-		
-			// Pay as you go
-			if (oysterCard.hasPayAsYouGoBalance()) {
-				((TextView)findViewById(R.id.payg_balance)).setText(oysterCard.getPayAsYouGoBalance());
-			}
+			
+			// Clean out any old views to start fresh
+			mOysterDetailsView = (ViewGroup) findViewById(R.id.oyster_details_view);
+			mOysterDetailsView.removeAllViews();
+			
+			// Add card info and balance
+			View cardInfoView = buildCardInfoView(oysterCard);
+			
+			// If we have mutiple cards, don't show the card header - we'll already know
+			// what the card number is
+			if (mAccountInfo.hasMultipleOysterCards())
+				cardInfoView.findViewById(R.id.card_overview_heading).setVisibility(View.GONE);
+			
+			mOysterDetailsView.addView(cardInfoView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
 			// Auto Top-Up
 			if (oysterCard.hasAutoTopUp()) {
-				((TextView)findViewById(R.id.auto_topup)).setText(oysterCard.getAutoTopUp());
+				View autoTopUpView = buildAutoTopUpView(oysterCard);
+				mOysterDetailsView.addView(autoTopUpView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 			}
 
-			// Season ticket
-			if (oysterCard.hasSeasonTicketMessage()) {
-				TextView seasonTicketMessage = ((TextView)findViewById(R.id.season_ticket_message));
-				seasonTicketMessage.setText(oysterCard.getSeasonTicketMessage());
-				seasonTicketMessage.setVisibility(View.VISIBLE);
-			}
-			
 			// Add a Travel Card by inflating a new view
 			for (TravelCard travelCard : oysterCard.getTravelCards()) {
 				View travelCardView = buildTravelCardView(travelCard);
-				travelCardsLayout.addView(travelCardView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-				
-		        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.travelcard_progress);
-		        progressBar.setProgress(travelCard.getDateProgress());
+				mOysterDetailsView.addView(travelCardView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 			}
-				
+
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -262,6 +337,38 @@ public class OysterDetails extends Activity {
 		}
 	}
 	
+
+	/**
+	 * Build a view for each travelcard
+	 * @param travelCard
+	 * @return
+	 */
+	private View buildCardInfoView(OysterCard oysterCard) {
+		View cardInfoView = getLayoutInflater().inflate(R.layout.detail_cardinfo, null);
+	
+		// Set the labels
+		((TextView)cardInfoView.findViewById(R.id.card_overview_heading)).setText("Card " + oysterCard.getCardNumber());
+	
+		// Pay as you go
+		if (oysterCard.hasPayAsYouGoBalance()) {
+			((TextView)cardInfoView.findViewById(R.id.payg_balance)).setText(oysterCard.getPayAsYouGoBalance());
+		}
+		
+		return cardInfoView;
+	}
+	
+
+	/**
+	 * Build a view for each travelcard
+	 * @param travelCard
+	 * @return
+	 */
+	private View buildAutoTopUpView(OysterCard oysterCard) {
+		View autoTopUpView = getLayoutInflater().inflate(R.layout.detail_autotopup, null);
+		((TextView) autoTopUpView.findViewById(R.id.auto_topup)).setText(oysterCard.getAutoTopUp());
+		return autoTopUpView;
+	}	
+
 	
 	/**
 	 * Build a view for each travelcard
@@ -269,17 +376,70 @@ public class OysterDetails extends Activity {
 	 * @return
 	 */
 	private View buildTravelCardView(TravelCard travelCard) {
-		View detailView = getLayoutInflater().inflate(R.layout.travelcard, null);
-		((TextView) detailView.findViewById(R.id.travelcard_heading)).setText(travelCard.getName());
-		((TextView) detailView.findViewById(R.id.travelcard_date)).setText(travelCard.getDateString());
-		return detailView;
+		View travelCardView = getLayoutInflater().inflate(R.layout.detail_travelcard, null);
+		((TextView)travelCardView.findViewById(R.id.travelcard_heading)).setText(travelCard.getName());
+		((TextView)travelCardView.findViewById(R.id.travelcard_date)).setText(travelCard.getDateString());
+		
+        final ProgressBar progressBar = (ProgressBar)travelCardView.findViewById(R.id.travelcard_progress);
+        progressBar.setProgress(travelCard.getDateProgress());
+        
+        ((TextView)travelCardView.findViewById(R.id.travelcard_status)).setText(travelCard.getDateProgress() + "% complete");
+        
+        
+		return travelCardView;
 	}
 
+
+	
+	
 	
     /**
      * Background task for fetching tram times
      */
-	private class GetOysterDetails extends AsyncTask<Void, Void, OysterCard> {
+	private class GetSelectedCardDetails extends AsyncTask<String, Void, OysterCard> {
+
+		@Override
+		protected void onPreExecute() {
+			mErrorMessage = null;
+			updateRefreshStatusCard(true);
+		}
+
+		protected OysterCard doInBackground(String... oysterCardNumber) {
+			// Assume only one card number given in params
+			OysterCard oysterCard = null;
+			
+	    	try {
+    			oysterCard = mProvider.getOysterCard(oysterCardNumber[0]);
+			} 
+	    	catch (Exception e) {
+	    		e.printStackTrace();
+	    		mErrorMessage = e.toString();
+			}
+	    	return oysterCard;
+		}
+
+		@Override
+		protected void onPostExecute(OysterCard oysterCard) {
+			
+			if (mErrorMessage != null) {
+				UIUtils.showMessage(OysterDetails.this, "OysterMate Error", "There was an error fetching your Oyster card details: \n" + mErrorMessage);
+				displayNoResults("No Results.");
+				updateRefreshStatusCard(false);
+			}
+			else {
+				displayOysterCardDetails(oysterCard);
+				updateRefreshStatusCard(false);
+			}
+			
+		}
+	}	
+	
+	
+	
+    /**
+     * Background task for fetching OysterCard details
+     */
+	private class GetOysterAccountInfo extends AsyncTask<Void, Void, AccountInfo> {
 
 		@Override
 		protected void onPreExecute() {
@@ -288,32 +448,31 @@ public class OysterDetails extends Activity {
 		}
 
 		@Override
-		protected OysterCard doInBackground(final Void... params) {
-			OysterCard oysterCard = null;
+		protected AccountInfo doInBackground(final Void... params) {
+			mAccountInfo = null;
 			
 	    	try {
-	    		oysterCard = mProvider.getOysterCard();
+	    		mAccountInfo = mProvider.getOysterCardAccountInfo();
 			} 
 	    	catch (Exception e) {
 	    		e.printStackTrace();
 	    		mErrorMessage = e.toString();
 			}
-	    	mOysterCard = oysterCard;
-	    	return oysterCard;
+
+	    	return mAccountInfo;
 		}
 
 		@Override
-		protected void onPostExecute(OysterCard oysterCard) {
+		protected void onPostExecute(AccountInfo mAccountInfo) {
 			updateRefreshStatus(false);
-
+			
 			if (mErrorMessage != null) {
-				UIUtils.showMessage(OysterDetails.this, "OysterMate Error", "There was an error fetching your Oyster card details: \n" + mErrorMessage);
+				UIUtils.showMessage(OysterDetails.this, "OysterMate Error", "There was an error fetching your Oyster account details: \n" + mErrorMessage);
 				displayNoResults("No Results.");
 			}
 			else {
-				displayDetails(oysterCard);
+				displayOysterDetails(mAccountInfo);
 			}
-			
 		}
 	}
 	

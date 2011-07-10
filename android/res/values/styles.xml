@@ -100,6 +100,54 @@
     </style>   
 
 
+
+	<style name="SectionHeader">
+		<item name="android:textSize">@dimen/text_size_medium</item>
+		<item name="android:textStyle">bold</item>
+		<item name="android:textColor">@android:color/primary_text_light</item>
+		<item name="android:background">@drawable/list_bg</item>
+    </style>
+    
+    <style name="DetailSeparator">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">1px</item>
+        <item name="android:background">@drawable/list_separator</item>
+    </style>
+    
+
+	<style name="DetailSection">
+        <item name="android:paddingLeft">12dip</item>
+        <item name="android:paddingRight">12dip</item>
+    </style>
+    
+    
+    <style name="DetailItemHeader">
+		<item name="android:textSize">@dimen/text_size_large</item>
+		<item name="android:textStyle">bold</item>
+		<item name="android:textColor">@android:color/primary_text_light</item>
+<!--		<item name="android:background">@drawable/list_bg</item>-->
+    </style>
+    
+    
+    
+ 	<style name="DetailItemText">
+		<item name="android:textSize">@dimen/text_size_medium</item>
+		<item name="android:textColor">@android:color/primary_text_light</item>
+    </style>  
+
+ 	<style name="DetailItemSmallText">
+		<item name="android:textSize">@dimen/text_size_small</item>
+		<item name="android:textColor">@android:color/primary_text_light</item>
+    </style>  
+
+
+
+
+
+
+
+
+
 	<style name="TextHeader">
 		<item name="android:textSize">@dimen/text_size_large</item>
 		<item name="android:textStyle">bold</item>

@@ -45,48 +45,28 @@
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:padding="5dip"
-		style="@style/TextHeader"			
-		android:text="Card overview"/>
+		style="@style/SectionHeader"
+		android:text="Card Number"/>
 	
-	<LinearLayout android:id="@+id/card_overview_layout"
-		android:orientation="vertical"
-		android:layout_height="wrap_content"
-		android:layout_width="fill_parent"
-		android:paddingLeft="10dip"
-		android:paddingRight="10dip">		
-    
-	    <TextView android:id="@+id/welcome"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			style="@style/TextItem" />
-	    
-	    <TextView android:id="@+id/card_number"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			style="@style/TextItem" />
-
-	</LinearLayout>
-
 	<!--  Pay as you go -->	
 	<TextView android:id="@+id/payg_heading"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:padding="5dip"
-		style="@style/TextHeader"
+		style="@style/DetailItemHeader"
 		android:text="Pay as you go" />
 		
 	<LinearLayout android:id="@+id/payg_layout"
 		android:orientation="horizontal"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
-		android:paddingLeft="10dip"
-		android:paddingRight="10dip">			
+		style="@style/DetailSection">			
 		
 		<TextView android:id="@+id/payg_balance"
 			android:layout_width="0dip"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			style="@style/TextItem" />
+			style="@style/DetailItemText" />
 							
 		<Button android:id="@+id/button_add_topup"
 			android:layout_width="wrap_content" 
@@ -97,6 +77,5 @@
 			android:onClick="onAddTopUpClick"/>				
 
 	</LinearLayout>	
-		
 		
 </LinearLayout>

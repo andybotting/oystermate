@@ -26,7 +26,7 @@
     </LinearLayout>
 
 
-	<!-- Loading Spinner -->
+	<!-- Loading progress -->
 	<LinearLayout
         android:id="@+id/loading_view"
 	    android:layout_width="fill_parent"
@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_size_small"
-            android:text="@string/fetching_data" />
+            android:text="@string/fetching_account_data" />
             
     </LinearLayout>  
 
@@ -59,7 +59,7 @@
        	android:layout_weight="1"
         android:gravity="center"
         android:visibility="gone">
-        
+	
         <TextView android:id="@+id/message_view_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -68,18 +68,81 @@
     </LinearLayout>  
 
 
+
+
 	<!-- Main view -->
 	<ScrollView android:id="@+id/oyster_details_scroll_view"
 		xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
-	    android:scrollbars="none">
-    
-		<LinearLayout android:id="@+id/oyster_details_view"
-			android:orientation="vertical"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:layout_weight="1" />
+	    android:fillViewport="true">
+	    
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical">
+	        
+			<!-- Welcome Message -->
+			<TextView android:id="@+id/welcome"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:padding="5dip"
+			    style="@style/DetailItemText" />
+				
+			<!-- Card select spinner -->	
+			<LinearLayout android:id="@+id/card_select_view"
+			    android:orientation="vertical"
+			    android:padding="5dip"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:visibility="gone">
+			    				
+			    <TextView android:id="@+id/card_select_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"   	
+					style="@style/DetailItemText"
+			        android:text="@string/label_select_card" />
+			
+			    <Spinner android:id="@+id/card_select_spinner"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:drawSelectorOnTop="true"
+			        android:prompt="@string/prompt_select_card" />				
+
+			</LinearLayout>
+		
+			<!-- Card details -->
+		    <LinearLayout android:id="@+id/oyster_details_view"
+				android:orientation="vertical"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1" />
+				
+			<!-- Loading progress -->
+			<LinearLayout
+		        android:id="@+id/card_loading_view"
+			    android:layout_width="fill_parent"
+			    android:layout_height="fill_parent"
+		       	android:layout_weight="1"
+		        android:gravity="center"
+		        android:visibility="gone">
+		        
+		        <ProgressBar
+		            style="?android:attr/progressBarStyleSmall"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:paddingRight="6dip"
+		            android:indeterminate="true"/>
+		            
+		        <TextView
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:textSize="@dimen/text_size_small"
+		            android:text="@string/fetching_card_data" />
+		            
+		    </LinearLayout> 	
+			
+		</LinearLayout>
     
     </ScrollView>
     

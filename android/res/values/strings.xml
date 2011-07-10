@@ -40,13 +40,16 @@
 	
 	<!-- OysterDetails -->
 	<string name="signing_in">Signing in...</string>
-	<string name="fetching_data">Fetching OysterCard details...</string>
+	<string name="fetching_account_data">Fetching Oyster Account details...</string>
+	<string name="fetching_card_data">Fetching OysterCard details...</string>
 	<string name="menu_info">About</string>
 	<string name="menu_logout">Log out</string>
 	<string name="menu_refresh">Refresh</string>
 	<string name="manage_autotopup">Manage Auto Top-Up</string>
 	<string name="add_topup">Top-up OysterCard</string>
 	<string name="label_loading">Loading...</string>
+	<string name="label_select_card">Oyster Card:</string>	
+	<string name="prompt_select_card">Select Oyster Card...</string>	
 			
 	<!-- Login -->
 	<string name="login_info">Please sign in with your TfL Oyster Card login details.\nIf you don\'t already have an account, click \'Sign Up\' to create one with your Oyster Card ID number.</string>

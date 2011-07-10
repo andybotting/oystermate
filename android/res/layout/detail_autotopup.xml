@@ -43,31 +43,30 @@
 	<TextView android:id="@+id/autotopup_heading"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		style="@style/TextHeader"
+		style="@style/DetailItemHeader"
 		android:padding="5dip"
 		android:text="Auto Top-Up" />
 			    
-		<LinearLayout android:id="@+id/auto_topup_layout"
-			android:orientation="horizontal"
+	<LinearLayout android:id="@+id/auto_topup_layout"
+		android:orientation="horizontal"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		style="@style/DetailSection">		
+			
+		<TextView android:id="@+id/auto_topup"
+			android:layout_width="0dip"
 			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
-			android:paddingLeft="10dip"
-			android:paddingRight="10dip">			
-				
-			<TextView android:id="@+id/auto_topup"
-				android:layout_width="0dip"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				style="@style/TextItem" />
-				
-			<Button android:id="@+id/button_manage_autotopup"
-				android:layout_width="wrap_content" 
-				android:layout_height="wrap_content"
-				android:layout_below="@+id/auto_topup"
-				android:text="@string/manage_autotopup"
-				android:background="@drawable/wp_button"
-				android:onClick="onManageAutoTopUpClick"/>	
+			android:layout_weight="1"
+			style="@style/DetailItemText" />
+			
+		<Button android:id="@+id/button_manage_autotopup"
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/auto_topup"
+			android:text="@string/manage_autotopup"
+			android:background="@drawable/wp_button"
+			android:onClick="onManageAutoTopUpClick"/>	
 							
-		</LinearLayout>
-
+	</LinearLayout>
+	
 </LinearLayout>

@@ -7,15 +7,12 @@ import java.util.Locale;
 public class OysterCard {
 
     private String cardNumber;
-	private String welcome;
 	private double payAsYouGoBalance = 0.0;
 	private double autoTopUpValue = 0.0;
-	private String manageAutoTopUpURL;
-	private String addTopUpURL;
 	private String seasonTicketMessage;
 	private List<TravelCard> travelCards;
 	private List<Journey> journeys;
-	
+
 	
 	public void setCardNumber(String cardNumber) {
 		this.cardNumber = cardNumber;
@@ -24,15 +21,6 @@ public class OysterCard {
 	public String getCardNumber() {
 		return cardNumber;
 	}
-	
-	public void setWelcome(String welcome) {
-		this.welcome = welcome;
-	}
-	
-	public String getWelcome() {
-		return welcome;
-	}
-	
 	
 	public boolean hasPayAsYouGoBalance() {
 		if (payAsYouGoBalance == 0.0)
@@ -64,27 +52,7 @@ public class OysterCard {
 		return currencyFormatter.format(autoTopUpValue);
 	}
 	
-	public void setManageAutoTopUpURL(String manageAutoTopUpURL) {
-		this.manageAutoTopUpURL = manageAutoTopUpURL;
-	}
 
-	public String getManageAutoTopUpURL() {
-		return manageAutoTopUpURL;
-	}
-
-	public boolean hasAddTopUpURL() {
-		if (addTopUpURL == null)
-			return false;
-		return true;
-	}
-	
-	public void setAddTopUpURL(String addTopUpURL) {
-		this.addTopUpURL = addTopUpURL;
-	}
-
-	public String getAddTopUpURL() {
-		return addTopUpURL;
-	}
 
 	
 	public boolean hasSeasonTicketMessage() {

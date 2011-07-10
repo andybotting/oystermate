@@ -40,21 +40,41 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
     
-	<TextView android:id="@+id/travelcard_heading"
+    <TextView android:id="@+id/season_heading"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:padding="5dip"
-		style="@style/TextItem" />
-			    
-	<TextView android:id="@+id/travelcard_date"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		style="@style/TextItem" />
+		style="@style/DetailItemHeader"
+		android:text="Travel cards" />
 		
-	<ProgressBar android:id="@+id/travelcard_progress"
-		android:layout_width="fill_parent"
+	<LinearLayout android:id="@+id/season_layout"
+		android:orientation="vertical"
 		android:layout_height="wrap_content"
-		style="?android:attr/progressBarStyleHorizontal"
-		android:max="100" />
+		android:layout_width="fill_parent"
+		style="@style/DetailSection"
+		android:layout_weight="1"> 	
+    
+		<TextView android:id="@+id/travelcard_heading"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			style="@style/DetailItemText" />
+				    
+		<TextView android:id="@+id/travelcard_date"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			style="@style/DetailItemText" />
+			
+		<ProgressBar android:id="@+id/travelcard_progress"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			style="?android:attr/progressBarStyleHorizontal"
+			android:max="100" />
+			
+		<TextView android:id="@+id/travelcard_status"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			style="@style/DetailItemSmallText" />		
+
+	</LinearLayout>
 
 </LinearLayout>

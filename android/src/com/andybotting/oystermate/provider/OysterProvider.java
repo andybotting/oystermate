@@ -10,9 +10,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
 import android.util.Log;
 
 import com.andybotting.oystermate.objects.OysterCard;
+import com.andybotting.oystermate.objects.AccountInfo;
 import com.andybotting.oystermate.objects.TravelCard;
 import com.andybotting.oystermate.provider.HttpConnection;
 
@@ -21,18 +25,15 @@ public class OysterProvider {
 	private static final String TAG = "OysterMate";
 	private static final boolean LOGV = Log.isLoggable(TAG, Log.INFO);
 
-	private Pattern pattern;
-	private Matcher matcher;
-
 	public static final String LOGIN_POST_URL = "https://oyster.tfl.gov.uk/oyster/security_check";
 	public static final String LOGGED_IN_URL = "https://oyster.tfl.gov.uk/oyster/entry.do";
 	public static final String DETAILS_URL = "https://oyster.tfl.gov.uk/oyster/loggedin.do";
 	public static final String JOURNEY_HISTORY_URL = "https://oyster.tfl.gov.uk/oyster/ppvStatementPrint.do";
+	public static final String SELECT_CARD_URL = "https://oyster.tfl.gov.uk/oyster/selectCard.do";
 	
+	private Pattern pattern;
+	private Matcher matcher;
 	
-//	private String mDetailsDocument = null;
-//	private String mJourneyHistoryDocument = null;
-		
 	
 	/**
 	 * Search for one instance of a string
@@ -53,18 +54,14 @@ public class OysterProvider {
 	
 	/**
 	 * Get the card balance
-	 * @param document
-	 * @return String
 	 */
 	public String getPAYGBalance(String document) {
-		return searchItem(">Balance:.*?&pound;(\\d+\\.\\d+)</span>", document);
+		return searchItem(">Balance:.*?(-?\\d+\\.\\d+)</span>", document);
 	}
 	
 	
 	/**
 	 * Get the card number
-	 * @param document
-	 * @return String 
 	 */
 	public String getCardNo(String document) {
 		return searchItem("<h2>Card No: (\\d+)</h2>", document);
@@ -73,8 +70,6 @@ public class OysterProvider {
 	
 	/**
 	 * Get the Auto Top-Up value
-	 * @param document
-	 * @return String
 	 */
 	public String getAutoTopUp(String document) {
 		return searchItem(">Auto top up:.*?&#163;(\\d+\\.\\d+)", document);
@@ -83,8 +78,6 @@ public class OysterProvider {
 	
 	/**
 	 * Get the welcome message
-	 * @param document
-	 * @return String
 	 */
 	public String getWelcomeMessage(String document) {
 		return searchItem("<p id=\"welcome\">(.*?)</p>", document);
@@ -93,9 +86,6 @@ public class OysterProvider {
 	
 	/**
 	 * Get the season ticket message 
-	 * @param document
-	 * @return String
-	 * @throws OysterProviderException
 	 */
 	public String getSeasonTicketMessage(String document) {
 		return searchItem("<h3>Season tickets</h3>.*?<span class=\"content\">(.*?)</span>", document);
@@ -103,10 +93,40 @@ public class OysterProvider {
 	
 	
 	/**
+	 * Check to see if there are multiple cards on this account
+	 */
+	public boolean hasMultipleCards(String document) {
+		String search = searchItem("(select name=\"cardId\" id=\"select_card_no\")", document);
+		if (search == null)
+			return false;
+		return true;
+	}
+	
+	
+	
+	/**
+	 * Return the Oyster Card numbers found for the account 
+	 */
+	public List<String> getOysterCardNumbers(String document) {
+		
+		List<String> oysterCardNumbers = new ArrayList<String>();
+		
+		String searchPattern = ">(\\d{12})</option>";
+		
+		pattern = Pattern.compile(searchPattern);
+		matcher = pattern.matcher(document);
+		
+        while (matcher.find()) {
+        	oysterCardNumbers.add(matcher.group(1));
+        }
+        
+        return oysterCardNumbers;
+	}
+	
+	
+	
+	/**
 	 * Get the season ticket message 
-	 * @param document
-	 * @return String
-	 * @throws OysterProviderException
 	 */
 	public String getErrorMessage(String document) {
 		return searchItem("<div id=\"errormessage\"><ul><li>(.*?)</li></ul></div>", document);
@@ -115,8 +135,6 @@ public class OysterProvider {
 	
 	/**
 	 * Get the travel cards
-	 * @param document
-	 * @return List<TravelCard>
 	 */
 	public List<TravelCard> getTravelCards(String document) {
 		
@@ -146,8 +164,6 @@ public class OysterProvider {
 	
 	/**
 	 * Get the Add Top-Up URL 
-	 * @param document
-	 * @return String
 	 */
 	public String getAddTopUpURL(String document) {
 		return searchItem("<a href=\"([^>]*)\">Add/renew/top-up ticket</a>", document);
@@ -156,8 +172,6 @@ public class OysterProvider {
 
 	/**
 	 * Get the Manage Auto Top-Up URL
-	 * @param document
-	 * @return String
 	 */
 	public String getManageAutoTopUpURL(String document) {
 		return searchItem("<a href=\"([^>]*)\">Manage Auto top-up</a>", document);
@@ -219,14 +233,9 @@ public class OysterProvider {
 //	<td align="right">&pound;15.80</td>
 //	
 //</tr>
-	
-	
-	
 		
 	/**
 	 * Parse the date string
-	 * @param dateString
-	 * @return Date
 	 */
 	private Date parseDateString(String dateString) throws ParseException  {
 		// 09/06/2011
@@ -238,22 +247,64 @@ public class OysterProvider {
 	
 	
 	/**
-	 * Get the Oyster Card from the document
+	 * Get the oystercard for a given card number
 	 */
-	public OysterCard getOysterCard() throws IOException, OysterProviderException {
+	public OysterCard getOysterCard(String oysterCardNumber) throws IOException, OysterProviderException {
+		String oysterCardDetailsPage = getSelectedCardDetails(oysterCardNumber);
+		return parseOysterCard(oysterCardDetailsPage);
+	}
+	
+	
+	/**
+	 * Get the Oyster Card account info
+	 */
+	public AccountInfo getOysterCardAccountInfo() throws IOException, OysterProviderException {
+		AccountInfo accountInfo = new AccountInfo();
+		
+		String oysterCardDetailsPage = getOysterCardDetailsPage();
+		
+		String welcome = getWelcomeMessage(oysterCardDetailsPage);
+		String addTopUpURL = getAddTopUpURL(oysterCardDetailsPage);
+		String manageAutoTopUpURL = getManageAutoTopUpURL(oysterCardDetailsPage);
+		
+		accountInfo.setWelcome(welcome);		
+		accountInfo.setAddTopUpURL(addTopUpURL);
+		accountInfo.setManageAutoTopUpURL(manageAutoTopUpURL);		
+		
+		if (hasMultipleCards(oysterCardDetailsPage)) {
+			List<String> oysterCardNumbers = getOysterCardNumbers(oysterCardDetailsPage);
+			accountInfo.setOysterCardNumbers(oysterCardNumbers);
+		}
+		else {
+			// Add the card to the account info
+			OysterCard oysterCard = parseOysterCard(oysterCardDetailsPage);
+			accountInfo.addOysterCardNumber(oysterCard.getCardNumber());
+			accountInfo.addOysterCard(oysterCard);	
+		}
+		
+		return accountInfo;
+	}
+
+
+	/**
+	 * Parse the OysterCard html and return an object
+	 */
+	public OysterCard parseOysterCard(String oysterCardDetailsPage) throws IOException, OysterProviderException {
 		
 		OysterCard oysterCard = new OysterCard();
-		String document = getOysterCardDetailsPage();
 		
-		String welcome = getWelcomeMessage(document);
-		String cardNumber = getCardNo(document);
-		String autoTopUpS = getAutoTopUp(document);
-		String paygBalanceS = getPAYGBalance(document);
-		String addTopUpURL = getAddTopUpURL(document);
-		String manageAutoTopUpURL = getManageAutoTopUpURL(document);
-		String seasonTicketMessage = getSeasonTicketMessage(document);
-		List<TravelCard> travelCards = getTravelCards(document);
+
+		String cardNumber = getCardNo(oysterCardDetailsPage);
+		String seasonTicketMessage = getSeasonTicketMessage(oysterCardDetailsPage);
+		List<TravelCard> travelCards = getTravelCards(oysterCardDetailsPage);
 		
+		oysterCard.setCardNumber(cardNumber);
+		oysterCard.setSeasonTicketMessage(seasonTicketMessage);
+		oysterCard.setTravelCards(travelCards);
+		
+		String autoTopUpS = getAutoTopUp(oysterCardDetailsPage);
+		String paygBalanceS = getPAYGBalance(oysterCardDetailsPage);
+				
 		if (paygBalanceS != null) {
 			try {
 				double paygBalance = Double.parseDouble(paygBalanceS);
@@ -273,16 +324,9 @@ public class OysterProvider {
 			}
 		}
 		
-		oysterCard.setWelcome(welcome);
-		oysterCard.setCardNumber(cardNumber);
-		oysterCard.setAddTopUpURL(addTopUpURL);
-		oysterCard.setManageAutoTopUpURL(manageAutoTopUpURL);
-		oysterCard.setSeasonTicketMessage(seasonTicketMessage);
-		oysterCard.setTravelCards(travelCards);
-		
 		return oysterCard;
-		
 	}
+	
 	
 	
 	/**
@@ -302,9 +346,26 @@ public class OysterProvider {
 	
 	
 	/**
-	 * Get the document content specifiying username and password
-	 * @throws IOException 
-	 * @throws OysterProviderException 
+	 * Get the Oyster Card details for a given card number, if multiple cards exist 
+	 */
+	public String getSelectedCardDetails(String oysterCardNumber) throws IOException, OysterProviderException {
+	    List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+	    nameValuePairs.add(new BasicNameValuePair("method", "input"));
+	    nameValuePairs.add(new BasicNameValuePair("cardId", oysterCardNumber));
+	    
+	    HttpConnection httpConn = new HttpConnection();
+	    String document = httpConn.postURL(SELECT_CARD_URL, nameValuePairs);
+	    
+		String errorMessage = getErrorMessage(document);
+		if (errorMessage != null)
+			throw new OysterProviderException(errorMessage);
+
+		return document;
+	}
+
+
+	/**
+	 * Perform login specifiying username and password
 	 */
 	public String performLogin(String username, String password) throws IOException, OysterProviderException {
 		if (LOGV) Log.i(TAG, "Logging in...");
@@ -321,15 +382,13 @@ public class OysterProvider {
 	
 	
 	/**
-	 * Get the document content specifiying username and password
-	 * @throws IOException 
-	 * @throws OysterProviderException 
+	 * Get the document content from a given url
 	 */
 	public String getDocumentContent(String url) throws IOException, OysterProviderException {
 		if (LOGV) Log.i(TAG, "Getting web page content...");
 		
 		HttpConnection httpConn = new HttpConnection();
-		String document = httpConn.fetchDocument(url);
+		String document = httpConn.getURL(url);
 		
 		String errorMessage = getErrorMessage(document);
 		if (errorMessage != null)
