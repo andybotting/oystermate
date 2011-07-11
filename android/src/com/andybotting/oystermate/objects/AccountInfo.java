@@ -8,8 +8,7 @@ public class AccountInfo {
 	private String welcome;
 	private List<String> oysterCardNumbers = new ArrayList<String>();
 	private List<OysterCard> oysterCards = new ArrayList<OysterCard>();
-	private String manageAutoTopUpURL;
-	private String addTopUpURL;
+
 
 
 	public void setWelcome(String welcome) {
@@ -76,27 +75,7 @@ public class AccountInfo {
 		return oysterCards.size();
 	}
 
-	public void setManageAutoTopUpURL(String manageAutoTopUpURL) {
-		this.manageAutoTopUpURL = manageAutoTopUpURL;
-	}
 
-	public String getManageAutoTopUpURL() {
-		return manageAutoTopUpURL;
-	}
-
-	public boolean hasAddTopUpURL() {
-		if (addTopUpURL == null)
-			return false;
-		return true;
-	}
-	
-	public void setAddTopUpURL(String addTopUpURL) {
-		this.addTopUpURL = addTopUpURL;
-	}
-
-	public String getAddTopUpURL() {
-		return addTopUpURL;
-	}
 
 
 

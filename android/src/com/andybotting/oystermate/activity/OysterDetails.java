@@ -34,13 +34,16 @@ public class OysterDetails extends Activity {
 	
 	// Menu items
 	private static final int MENU_INFO = 0;
-	private static final int MENU_SIGN_OUT = 1;
-	private static final int MENU_REFRESH = 2;
+	private static final int MENU_REFRESH = 1;
+	private static final int MENU_SIGN_OUT = 2;
+
 	
 	private PreferenceHelper mPreferenceHelper;
 	private OysterProvider mProvider;
 	
 	private AccountInfo mAccountInfo;
+	private OysterCard mOysterCard;
+	private String mSelectedOysterCardNumber;
 
 	private ViewGroup mOysterDetailsView;
 
@@ -58,7 +61,7 @@ public class OysterDetails extends Activity {
         mPreferenceHelper = new PreferenceHelper();
         mProvider = new OysterProvider();
 
-        kickOff();
+        refreshDetails();
     }
     
     
@@ -66,7 +69,7 @@ public class OysterDetails extends Activity {
      * Handle "refresh" title-bar action. 
      */
     public void onRefreshClick(View v) {
-    	kickOff();
+    	refreshDetails();
     }
     
     
@@ -82,7 +85,7 @@ public class OysterDetails extends Activity {
      * Handle Manage auto top-up click
      */
     public void onManageAutoTopUpClick(View v) {
-    	UIUtils.lauchWebView(this, TFL_URL + mAccountInfo.getManageAutoTopUpURL());
+    	UIUtils.lauchWebView(this, TFL_URL + mOysterCard.getManageAutoTopUpURL());
     }
     
     
@@ -90,7 +93,7 @@ public class OysterDetails extends Activity {
      * Handle Add Top-up click 
      */
     public void onAddTopUpClick(View v) {
-    	UIUtils.lauchWebView(this, TFL_URL + mAccountInfo.getAddTopUpURL());
+    	UIUtils.lauchWebView(this, TFL_URL + mOysterCard.getAddTopUpURL());
     }    
     
     
@@ -124,22 +127,6 @@ public class OysterDetails extends Activity {
 		dialogBuilder.show();
 	}
     
-
-        
-    
-    /**
-     * Start the activity
-     */
-    protected void kickOff() {
-    	if (!mPreferenceHelper.hasCredentials()) {
-        	Intent i = new Intent(this, Login.class);
-        	startActivityForResult(i, 0);
-        }
-        else {
-        	new GetOysterAccountInfo().execute();
-        }
-    }
-
 	
 	/**
 	 * Results back from login activity
@@ -168,13 +155,13 @@ public class OysterDetails extends Activity {
 		super.onCreateOptionsMenu(menu);
 		
 		menu.add(0, MENU_INFO, 0, R.string.menu_info)
-			.setIcon(R.drawable.ic_menu_info_details);		
-		
-		menu.add(0, MENU_SIGN_OUT, 0, R.string.menu_logout)
-			.setIcon(R.drawable.ic_menu_logout);
+			.setIcon(R.drawable.ic_menu_info_details);
 		
 		menu.add(0, MENU_REFRESH, 0, R.string.menu_refresh)
 			.setIcon(R.drawable.ic_menu_refresh);
+		
+		menu.add(0, MENU_SIGN_OUT, 0, R.string.menu_logout)
+			.setIcon(R.drawable.ic_menu_logout);	
 	
 		return true;
 	}
@@ -192,13 +179,24 @@ public class OysterDetails extends Activity {
 				return true;
 			case MENU_SIGN_OUT:
 				mPreferenceHelper.clearCredentials();
-				kickOff();
+	        	Intent intent = new Intent(this, Login.class);
+	        	startActivityForResult(intent, 0);
 				return true;
 			case MENU_REFRESH:
-				new GetOysterAccountInfo().execute();
+				refreshDetails();
 				return true;
 		}	
 		return false;
+	}
+	
+	
+	private void refreshDetails() {
+    	if (mSelectedOysterCardNumber != null) {
+    		new GetSelectedCardDetails().execute(mSelectedOysterCardNumber);
+    	}
+    	else {
+    		new GetOysterAccountInfo().execute();
+    	}
 	}
 	
 	
@@ -242,7 +240,9 @@ public class OysterDetails extends Activity {
 	}
 	
 
-	
+	/**
+	 * Display the OysterCard Account
+	 */
 	private void displayOysterDetails(final AccountInfo accountInfo) {
 		
 		if (!accountInfo.hasOysterCards()) {
@@ -270,19 +270,19 @@ public class OysterDetails extends Activity {
 					new OnItemSelectedListener() {
 						public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-							String oysterCardNumber = mAccountInfo.getOysterCardNumber(position);
-							if (mAccountInfo.hasOysterCard(oysterCardNumber)) {
-								OysterCard oysterCard = mAccountInfo.getOysterCard(position);
-								displayOysterCardDetails(oysterCard);
+							mSelectedOysterCardNumber = mAccountInfo.getOysterCardNumber(position);
+							if (mAccountInfo.hasOysterCard(mSelectedOysterCardNumber)) {
+								mOysterCard = mAccountInfo.getOysterCard(position);
+								displayOysterCardDetails(mOysterCard);
 							}
 							else {
-								new GetSelectedCardDetails().execute(oysterCardNumber);
+								new GetSelectedCardDetails().execute(mSelectedOysterCardNumber);
 							}
 
 						}
 			
 						public void onNothingSelected(AdapterView<?> parent) {
-							// Nothing
+							mSelectedOysterCardNumber = null;
 						}
 							
 					}
@@ -290,8 +290,8 @@ public class OysterDetails extends Activity {
 			}
 			else {
 				// Just one card
-				OysterCard oysterCard = mAccountInfo.getOysterCard(0);
-				displayOysterCardDetails(oysterCard);
+				mOysterCard = mAccountInfo.getOysterCard(0);
+				displayOysterCardDetails(mOysterCard);
 			}
 		}
 	}
@@ -427,7 +427,8 @@ public class OysterDetails extends Activity {
 				updateRefreshStatusCard(false);
 			}
 			else {
-				displayOysterCardDetails(oysterCard);
+				mOysterCard = oysterCard;
+				displayOysterCardDetails(mOysterCard);
 				updateRefreshStatusCard(false);
 			}
 			

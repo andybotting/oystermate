@@ -9,6 +9,8 @@ public class OysterCard {
     private String cardNumber;
 	private double payAsYouGoBalance = 0.0;
 	private double autoTopUpValue = 0.0;
+	private String manageAutoTopUpURL;
+	private String addTopUpURL;
 	private String seasonTicketMessage;
 	private List<TravelCard> travelCards;
 	private List<Journey> journeys;
@@ -52,8 +54,27 @@ public class OysterCard {
 		return currencyFormatter.format(autoTopUpValue);
 	}
 	
+	public void setManageAutoTopUpURL(String manageAutoTopUpURL) {
+		this.manageAutoTopUpURL = manageAutoTopUpURL;
+	}
 
+	public String getManageAutoTopUpURL() {
+		return manageAutoTopUpURL;
+	}
 
+	public boolean hasAddTopUpURL() {
+		if (addTopUpURL == null)
+			return false;
+		return true;
+	}
+	
+	public void setAddTopUpURL(String addTopUpURL) {
+		this.addTopUpURL = addTopUpURL;
+	}
+
+	public String getAddTopUpURL() {
+		return addTopUpURL;
+	}
 	
 	public boolean hasSeasonTicketMessage() {
 		if (seasonTicketMessage == null)

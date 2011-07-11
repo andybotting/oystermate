@@ -36,11 +36,13 @@ public class HttpConnection {
 	
 	private PreferenceHelper mPreferenceHelper;
 	
-	private static final int HTTP_CONNECTION_TIMEOUT = 3000;
-	private static final int HTTP_SOCKET_TIMEOUT = 3000;
+	// 20 seconds timeout
+	private static final int HTTP_CONNECTION_TIMEOUT = 20000;
+	private static final int HTTP_SOCKET_TIMEOUT = 20000;
+	
 	
 	/**
-	 * 
+	 * HttpConnection
 	 */
 	public HttpConnection() {
 		this.mPreferenceHelper = new PreferenceHelper();
@@ -117,7 +119,7 @@ public class HttpConnection {
 		HttpEntity entity = httpResponse.getEntity();
 		output = convertStreamToString(entity.getContent());
 		
-		System.out.println(output);
+		//System.out.println(output);
 		return output;
         
 	}

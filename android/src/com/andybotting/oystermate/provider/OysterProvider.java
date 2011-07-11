@@ -264,12 +264,10 @@ public class OysterProvider {
 		String oysterCardDetailsPage = getOysterCardDetailsPage();
 		
 		String welcome = getWelcomeMessage(oysterCardDetailsPage);
-		String addTopUpURL = getAddTopUpURL(oysterCardDetailsPage);
-		String manageAutoTopUpURL = getManageAutoTopUpURL(oysterCardDetailsPage);
+
 		
 		accountInfo.setWelcome(welcome);		
-		accountInfo.setAddTopUpURL(addTopUpURL);
-		accountInfo.setManageAutoTopUpURL(manageAutoTopUpURL);		
+	
 		
 		if (hasMultipleCards(oysterCardDetailsPage)) {
 			List<String> oysterCardNumbers = getOysterCardNumbers(oysterCardDetailsPage);
@@ -295,10 +293,14 @@ public class OysterProvider {
 		
 
 		String cardNumber = getCardNo(oysterCardDetailsPage);
+		String addTopUpURL = getAddTopUpURL(oysterCardDetailsPage);
+		String manageAutoTopUpURL = getManageAutoTopUpURL(oysterCardDetailsPage);
 		String seasonTicketMessage = getSeasonTicketMessage(oysterCardDetailsPage);
 		List<TravelCard> travelCards = getTravelCards(oysterCardDetailsPage);
 		
 		oysterCard.setCardNumber(cardNumber);
+		oysterCard.setAddTopUpURL(addTopUpURL);
+		oysterCard.setManageAutoTopUpURL(manageAutoTopUpURL);	
 		oysterCard.setSeasonTicketMessage(seasonTicketMessage);
 		oysterCard.setTravelCards(travelCards);
 		
