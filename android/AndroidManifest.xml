@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.andybotting.oystermate"
-      android:versionCode="018"
-      android:versionName="0.2-rc2">
+      android:versionCode="020"
+      android:versionName="0.2">
     <uses-sdk android:minSdkVersion="4" />
 
 	<!-- Application -->

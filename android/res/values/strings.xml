@@ -34,10 +34,8 @@
 -->
 <resources>
     <string name="app_name">Oyster Mate</string>
-    <string name="about_msg">An Android client for viewing and mangaing your OysterCard.\n\nhttps://github.com/andybotting/oystermate\n\nLatest changes in v0.1\n - Initial release.\n - Show balance, auto top-up and any season tickets\n - Manage season tickets and top-up via TfL site through app.\n\nPlease file bug reports and feature requests at the OysterMate project GitHub site at:\nhttps://github.com/andybotting/oystermate/issues\n\nThis application is provided with no warranty and is open source, licensed under the GPLv3.\n</string>
+    <string name="about_msg">An Android client for viewing and mangaing your OysterCard.\n\nhttps://github.com/andybotting/oystermate\n\nLatest changes in v0.2\n - Support multiple Oyster Cards on an account\n\nLatest changes in v0.1\n - Initial release.\n - Show balance, auto top-up and any season tickets\n - Manage season tickets and top-up via TfL site through app.\n\nPlease file bug reports and feature requests at the OysterMate project GitHub site at:\nhttps://github.com/andybotting/oystermate/issues\n\nThis application is provided with no warranty and is open source, licensed under the GPLv3.\n</string>
     
-    
-	
 	<!-- OysterDetails -->
 	<string name="signing_in">Signing in...</string>
 	<string name="fetching_account_data">Fetching Oyster Account details...</string>

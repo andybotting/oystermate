@@ -178,9 +178,7 @@ public class OysterDetails extends Activity {
 				showAbout();
 				return true;
 			case MENU_SIGN_OUT:
-				mPreferenceHelper.clearCredentials();
-	        	Intent intent = new Intent(this, Login.class);
-	        	startActivityForResult(intent, 0);
+				logout();
 				return true;
 			case MENU_REFRESH:
 				refreshDetails();
@@ -189,14 +187,35 @@ public class OysterDetails extends Activity {
 		return false;
 	}
 	
+
+	/**
+	 * Log out
+	 */
+	private void logout() {
+		// Clear credentials and show login activity
+		mPreferenceHelper.clearCredentials();
+    	Intent intent = new Intent(this, Login.class);
+    	startActivityForResult(intent, 0);
+	}
 	
+	
+	/**
+	 * Refresh details
+	 */
 	private void refreshDetails() {
-    	if (mSelectedOysterCardNumber != null) {
-    		new GetSelectedCardDetails().execute(mSelectedOysterCardNumber);
-    	}
-    	else {
-    		new GetOysterAccountInfo().execute();
-    	}
+		// If we haven't signed in yet
+		if (!mPreferenceHelper.hasCredentials()) {
+			Intent i = new Intent(this, Login.class);
+			startActivityForResult(i, 0);
+		}
+		else {
+	    	if (mSelectedOysterCardNumber != null) {
+	    		new GetSelectedCardDetails().execute(mSelectedOysterCardNumber);
+	    	}
+	    	else {
+	    		new GetOysterAccountInfo().execute();
+	    	}
+		}
 	}
 	
 	
@@ -290,6 +309,9 @@ public class OysterDetails extends Activity {
 			}
 			else {
 				// Just one card
+				ViewGroup cardSelectView = (ViewGroup)findViewById(R.id.card_select_view);
+				cardSelectView.setVisibility(View.GONE);
+								
 				mOysterCard = mAccountInfo.getOysterCard(0);
 				displayOysterCardDetails(mOysterCard);
 			}

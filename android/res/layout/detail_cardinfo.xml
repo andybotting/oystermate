@@ -73,7 +73,7 @@
 			android:layout_height="wrap_content"
 			android:layout_below="@+id/payg_balance"
 			android:text="@string/add_topup"
-			android:background="@drawable/wp_button"
+			style="@style/Button"
 			android:onClick="onAddTopUpClick"/>				
 
 	</LinearLayout>	
