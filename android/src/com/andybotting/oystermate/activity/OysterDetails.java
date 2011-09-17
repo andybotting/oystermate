@@ -308,12 +308,18 @@ public class OysterDetails extends Activity {
 				);
 			}
 			else {
-				// Just one card
+				
 				ViewGroup cardSelectView = (ViewGroup)findViewById(R.id.card_select_view);
 				cardSelectView.setVisibility(View.GONE);
-								
-				mOysterCard = mAccountInfo.getOysterCard(0);
-				displayOysterCardDetails(mOysterCard);
+				
+				mSelectedOysterCardNumber = mAccountInfo.getOysterCardNumber(0);
+				if (mAccountInfo.hasOysterCard(mSelectedOysterCardNumber)) {
+					mOysterCard = mAccountInfo.getOysterCard(0);
+					displayOysterCardDetails(mOysterCard);
+				}
+				else {
+					new GetSelectedCardDetails().execute(mSelectedOysterCardNumber);
+				}		
 			}
 		}
 	}

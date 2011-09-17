@@ -5,11 +5,9 @@ import java.util.List;
 
 public class AccountInfo {
 	
-	private String welcome;
+	private String welcome = "";
 	private List<String> oysterCardNumbers = new ArrayList<String>();
 	private List<OysterCard> oysterCards = new ArrayList<OysterCard>();
-
-
 
 	public void setWelcome(String welcome) {
 		this.welcome = welcome;

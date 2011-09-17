@@ -1,20 +1,21 @@
 package com.andybotting.oystermate.objects;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class OysterCard {
 
-    private String cardNumber;
+    private String cardNumber = "";
 	private double payAsYouGoBalance = 0.0;
 	private double autoTopUpValue = 0.0;
 	private String manageAutoTopUpURL;
-	private String addTopUpURL;
-	private String seasonTicketMessage;
-	private List<TravelCard> travelCards;
-	private List<Journey> journeys;
-
+	private String addTopUpURL = "";
+	private String seasonTicketMessage = "";
+	private List<TravelCard> travelCards = new ArrayList<TravelCard>();
+	private List<Journey> journeys = new ArrayList<Journey>();
+	
 	
 	public void setCardNumber(String cardNumber) {
 		this.cardNumber = cardNumber;

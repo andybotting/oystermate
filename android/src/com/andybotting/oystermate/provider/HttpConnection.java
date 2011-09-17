@@ -53,10 +53,9 @@ public class HttpConnection {
 	 * HTTP GET a URL
 	 */
 	public String getURL(String url) throws IOException {
-		if (LOGV) Log.i(TAG, "Fetching Document...");
+		if (LOGV) Log.i(TAG, "Fetching URL: " + url);
 		String output = null;
 		
-
         HttpParams httpParameters = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(httpParameters, HTTP_CONNECTION_TIMEOUT);
         HttpConnectionParams.setSoTimeout(httpParameters, HTTP_SOCKET_TIMEOUT);
@@ -99,7 +98,8 @@ public class HttpConnection {
 	/**
 	 * HTTP POST a URL with given data
 	 */
-	public String postURL(String URL, List<NameValuePair> nameValuePairs) throws IOException {
+	public String postURL(String url, List<NameValuePair> nameValuePairs) throws IOException {
+		if (LOGV) Log.i(TAG, "Posting URL: " + url);
 		String output = null;
         
         HttpParams httpParameters = new BasicHttpParams();
@@ -108,7 +108,7 @@ public class HttpConnection {
 
         DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
         
-	    HttpPost httpPost = new HttpPost(OysterProvider.SELECT_CARD_URL);
+	    HttpPost httpPost = new HttpPost(url);
 	    httpPost.setHeader("User-Agent", USER_AGENT);
 	    httpPost.setHeader("Cookie", "JSESSIONID=" + mPreferenceHelper.getSessionId());
 		httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
@@ -140,7 +140,7 @@ public class HttpConnection {
 	 * Perform login with given username and password
 	 */
 	public String performLogin(String username, String password) throws IOException {
-		if (LOGV) Log.i(TAG, "Performing Login...");
+		if (LOGV) Log.i(TAG, "Performing Login: " + OysterProvider.LOGIN_POST_URL);
 		String output = null;
 		
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.andybotting.oystermate"
-      android:versionCode="020"
-      android:versionName="0.2">
+      android:versionCode="030"
+      android:versionName="0.3.0">
     <uses-sdk android:minSdkVersion="4" />
 
 	<!-- Application -->
@@ -38,6 +38,9 @@
 	
 	<uses-sdk android:minSdkVersion="4" 
 		android:targetSdkVersion="8" />
+		
+	<!-- GoogleTV support -->
+	<uses-feature android:name="android.hardware.touchscreen" android:required="false" />
     
 	<supports-screens smallScreens="true" 
 		normalScreens="true" 
