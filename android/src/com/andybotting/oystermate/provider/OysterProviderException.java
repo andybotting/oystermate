@@ -35,10 +35,10 @@
 package com.andybotting.oystermate.provider;
 
 public class OysterProviderException extends Exception {
-	
+
 	private static final long serialVersionUID = 3269968005843824178L;
 
-	public OysterProviderException(Exception e){
+	public OysterProviderException(Exception e) {
 		super(e);
 		e.printStackTrace();
 	}
@@ -46,5 +46,9 @@ public class OysterProviderException extends Exception {
 	public OysterProviderException(String message) {
 		super(message);
 	}
-	
+
+	public String toString() {
+		return this.getMessage();
+	}
+
 }

@@ -39,48 +39,53 @@ import com.andybotting.oystermate.activity.WebLaunch;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
+import android.widget.TextView;
 import android.widget.Toast;
 
-
 public class UIUtils {
-	
-    /**
-     * Helper for creating toasts. You could call it a toaster.
-     */
-    public static void popToast(Context context, CharSequence text) {
-    	int duration = Toast.LENGTH_LONG;
-    	Toast toast = Toast.makeText(context, text, duration);
-    	toast.show();	
-    }
-    
-    
+
+	/**
+	 * Helper for creating toasts. You could call it a toaster.
+	 */
+	public static void popToast(Context context, CharSequence text) {
+		int duration = Toast.LENGTH_LONG;
+		Toast toast = Toast.makeText(context, text, duration);
+		toast.show();
+	}
+
 	/**
 	 * Show a dialog message
 	 */
 	public static void showMessage(Context context, String title, String message) {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-        if (title != null)
-        	dialogBuilder.setTitle(title);
-        dialogBuilder.setMessage(message);
-        dialogBuilder.setPositiveButton("OK", null);
-        dialogBuilder.setIcon(R.drawable.ic_dialog_alert);
-        dialogBuilder.show();
+		final SpannableString s = new SpannableString(message);
+		Linkify.addLinks(s, Linkify.ALL);
+
+		final AlertDialog d = new AlertDialog.Builder(context).setTitle(title).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				dialog.dismiss();
+			}
+		}).setIcon(R.drawable.ic_dialog_alert).setMessage(s).create();
+		d.show();
+		((TextView) d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
 	}
-    
-	
-    /**
-     * Launch the web view with the given URL
-     * @param url
-     */
-    public static void lauchWebView(Context context, String url) {
+
+	/**
+	 * Launch the web view with the given URL
+	 * 
+	 * @param url
+	 */
+	public static void launchWebView(Context context, String url) {
 		Bundle bundle = new Bundle();
 		bundle.putString(WebLaunch.INTENT_URL, url);
 		Intent intent = new Intent(context, WebLaunch.class);
 		intent.putExtras(bundle);
-		context.startActivity(intent);   	
-    }
-	
-	
+		context.startActivity(intent);
+	}
+
 }
