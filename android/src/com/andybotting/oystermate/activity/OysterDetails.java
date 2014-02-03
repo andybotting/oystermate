@@ -8,7 +8,6 @@ import com.andybotting.oystermate.utils.PreferenceHelper;
 import com.andybotting.oystermate.utils.UIUtils;
 import com.andybotting.oystermate.R;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -21,8 +20,7 @@ import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -33,17 +31,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class OysterDetails extends Activity {
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.MenuInflater;
+
+public class OysterDetails extends SherlockActivity {
 
 	private static final String TAG = "OysterDetails";
 	private static final boolean LOGV = Log.isLoggable(TAG, Log.INFO);
 
 	public static final String TFL_URL = "https://oyster.tfl.gov.uk";
-
-	// Menu items
-	private static final int MENU_INFO = 0;
-	private static final int MENU_REFRESH = 1;
-	private static final int MENU_SIGN_OUT = 2;
 
 	private PreferenceHelper mPreferenceHelper;
 	private OysterProvider mProvider;
@@ -58,11 +57,21 @@ public class OysterDetails extends Activity {
 	private ArrayAdapter<CharSequence> mAdapterForSpinner;
 
 	private String mErrorMessage;
+	
+	// Menu items
+	private MenuItem mRefreshItem;
+	private View mRefreshIndeterminateProgressView;
+	
 
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.oystercard_details);
+		
+		// Set up the Action Bar
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setHomeButtonEnabled(false);
+		actionBar.setDisplayHomeAsUpEnabled(false);		
 
 		mPreferenceHelper = new PreferenceHelper();
 		mProvider = new OysterProvider();
@@ -153,51 +162,50 @@ public class OysterDetails extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		switch (resultCode) {
-		case Activity.RESULT_OK:
+		case SherlockActivity.RESULT_OK:
 			new GetOysterAccountInfo().execute();
 			break;
-		case Activity.RESULT_CANCELED:
+		case SherlockActivity.RESULT_CANCELED:
 			finish();
 			break;
 		}
 
 	}
 
+	
 	/**
-	 * Create the options menu
+	 * Options menu
 	 */
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-
-		menu.add(0, MENU_INFO, 0, R.string.menu_info).setIcon(R.drawable.ic_menu_info_details);
-
-		menu.add(0, MENU_REFRESH, 0, R.string.menu_refresh).setIcon(R.drawable.ic_menu_refresh);
-
-		menu.add(0, MENU_SIGN_OUT, 0, R.string.menu_logout).setIcon(R.drawable.ic_menu_logout);
-
-		return true;
+		MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.details, menu);
+		// Get our refresh item for animating later
+		mRefreshItem = menu.findItem(R.id.menu_refresh);
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	/**
-	 * Options item selected
+	 * Menu actions
 	 */
-	@Override
-	public boolean onOptionsItemSelected(final MenuItem item) {
-
+	public boolean onOptionsItemSelected(MenuItem item) {
+		
 		switch (item.getItemId()) {
-		case MENU_INFO:
+		case R.id.menu_about:
 			showAbout();
 			return true;
-		case MENU_SIGN_OUT:
+		case R.id.menu_signout:
 			logout();
 			return true;
-		case MENU_REFRESH:
+		case R.id.menu_refresh:
 			refreshDetails();
+			return true;
+		case android.R.id.home:
+			finish();
 			return true;
 		}
 		return false;
 	}
+
 
 	/**
 	 * Log out
@@ -246,9 +254,18 @@ public class OysterDetails extends Activity {
 		findViewById(R.id.message_view).setVisibility(isRefreshing ? View.GONE : View.VISIBLE);
 		findViewById(R.id.loading_view).setVisibility(isRefreshing ? View.VISIBLE : View.GONE);
 
-		// Refresh button
-		findViewById(R.id.btn_title_refresh).setVisibility(isRefreshing ? View.GONE : View.VISIBLE);
-		findViewById(R.id.title_refresh_progress).setVisibility(isRefreshing ? View.VISIBLE : View.GONE);
+		// Refresh spinner in Action Bar
+		if (mRefreshItem != null) {
+			if (isRefreshing) {
+				if (mRefreshIndeterminateProgressView == null) {
+					LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+					mRefreshIndeterminateProgressView = inflater.inflate(R.layout.actionbar_progress, null);
+				}
+				mRefreshItem.setActionView(mRefreshIndeterminateProgressView);
+			} else {
+				mRefreshItem.setActionView(null);
+			}
+		}
 	}
 
 	/**
@@ -259,9 +276,18 @@ public class OysterDetails extends Activity {
 		findViewById(R.id.oyster_details_view).setVisibility(isRefreshing ? View.GONE : View.VISIBLE);
 		findViewById(R.id.card_loading_view).setVisibility(isRefreshing ? View.VISIBLE : View.GONE);
 
-		// Refresh button
-		findViewById(R.id.btn_title_refresh).setVisibility(isRefreshing ? View.GONE : View.VISIBLE);
-		findViewById(R.id.title_refresh_progress).setVisibility(isRefreshing ? View.VISIBLE : View.GONE);
+		// Refresh spinner in Action Bar
+		if (mRefreshItem != null) {
+			if (isRefreshing) {
+				if (mRefreshIndeterminateProgressView == null) {
+					LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+					mRefreshIndeterminateProgressView = inflater.inflate(R.layout.actionbar_progress, null);
+				}
+				mRefreshItem.setActionView(mRefreshIndeterminateProgressView);
+			} else {
+				mRefreshItem.setActionView(null);
+			}
+		}
 	}
 
 	/**

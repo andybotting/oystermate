@@ -66,11 +66,15 @@ public class UIUtils {
 		final SpannableString s = new SpannableString(message);
 		Linkify.addLinks(s, Linkify.ALL);
 
-		final AlertDialog d = new AlertDialog.Builder(context).setTitle(title).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
-				dialog.dismiss();
-			}
-		}).setIcon(R.drawable.ic_dialog_alert).setMessage(s).create();
+		final AlertDialog d = new AlertDialog.Builder(context)
+			.setTitle(title)
+			.setIcon(R.drawable.ic_dialog_alert)
+			.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					dialog.dismiss();
+				}
+			})
+			.setMessage(s).create();
 		d.show();
 		((TextView) d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
 	}

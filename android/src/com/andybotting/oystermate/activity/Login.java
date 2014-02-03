@@ -1,14 +1,18 @@
 package com.andybotting.oystermate.activity;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.andybotting.oystermate.R;
 import com.andybotting.oystermate.provider.OysterProvider;
 import com.andybotting.oystermate.provider.OysterProviderException;
 import com.andybotting.oystermate.utils.PreferenceHelper;
 import com.andybotting.oystermate.utils.UIUtils;
 
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,7 +20,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class Login extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.MenuInflater;
+
+public class Login extends SherlockActivity {
 
 	public ProgressDialog pd;
 	private OysterProvider mProvider;
@@ -27,6 +36,12 @@ public class Login extends Activity {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.login);
+		
+		// Set up the Action Bar
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setHomeButtonEnabled(false);
+		actionBar.setDisplayHomeAsUpEnabled(false);				
+		
 		mProvider = new OysterProvider();
 
 		final Button signInButton = (Button) findViewById(R.id.button_sign_in);
@@ -68,6 +83,61 @@ public class Login extends Activity {
 
 	}
 
+	/**
+	 * Show about dialog window
+	 */
+	public void showAbout() {
+		// Get the package name
+		String heading = getResources().getText(R.string.app_name) + "\n";
+
+		try {
+			PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+			heading += "v" + pi.versionName + "\n\n";
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		// Build alert dialog
+		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+		dialogBuilder.setTitle(heading);
+		View aboutView = getLayoutInflater().inflate(R.layout.dialog_about, null);
+		dialogBuilder.setView(aboutView);
+		dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				dialog.dismiss();
+			}
+		});
+		dialogBuilder.setCancelable(false);
+		dialogBuilder.setIcon(R.drawable.ic_dialog_info);
+		dialogBuilder.show();
+	}
+	
+	/**
+	 * Options menu
+	 */
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.home, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	/**
+	 * Menu actions
+	 */
+	public boolean onOptionsItemSelected(MenuItem item) {
+		
+		switch (item.getItemId()) {
+		case R.id.menu_about:
+			showAbout();
+			return true;
+		case android.R.id.home:
+			finish();
+			return true;
+		}
+		return false;
+	}	
+	
+	
 	/**
 	 * Simple check that username and password are filled out
 	 */
@@ -141,7 +211,7 @@ public class Login extends Activity {
 			} else {
 				// Success
 				saveCredentials();
-				setResult(Activity.RESULT_OK, new Intent());
+				setResult(SherlockActivity.RESULT_OK, new Intent());
 				finish();
 			}
 		}

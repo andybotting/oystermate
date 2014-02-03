@@ -3,11 +3,9 @@ package com.andybotting.oystermate.activity;
 import com.andybotting.oystermate.R;
 import com.andybotting.oystermate.utils.PreferenceHelper;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebChromeClient;
@@ -15,17 +13,29 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class WebLaunch extends Activity {
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Window;
+
+public class WebLaunch extends SherlockActivity {
 
 	public static final String INTENT_URL = "intent_url";
 
-	WebView mWebView;
-	String mUrl;
+	private WebView mWebView;
+	private String mUrl;
 
+	final SherlockActivity MyActivity = this;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_PROGRESS);
 		setContentView(R.layout.webview);
+		
+		// Set up the Action Bar
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setHomeButtonEnabled(true);
+		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		// Get the URL
 		mUrl = getIntent().getExtras().getString(INTENT_URL);
@@ -35,24 +45,19 @@ public class WebLaunch extends Activity {
 
 		mWebView.setWebChromeClient(new WebChromeClient() {
 			public void onProgressChanged(WebView view, int progress) {
-				loadingStatus(progress < 100 ? true : false);
+				MyActivity.setSupportProgress(progress * 100);
+	            setSupportProgressBarVisibility(true);
+
+	            if (progress == 100) {
+	                setSupportProgressBarVisibility(false);
+	            }
+
 			}
 		});
-
-	}
-
-	/**
-	 * Update refresh status spinner
-	 */
-	private void loadingStatus(boolean isLoading) {
-		findViewById(R.id.title_refresh_progress).setVisibility(isLoading ? View.VISIBLE : View.GONE);
 	}
 
 	/**
 	 * WebView which handles cookie sync in the background
-	 * 
-	 * @author andy
-	 * 
 	 */
 	private class WebViewTask extends AsyncTask<Void, Void, Boolean> {
 		String sessionCookie;
@@ -61,7 +66,7 @@ public class WebLaunch extends Activity {
 		@Override
 		protected void onPreExecute() {
 
-			loadingStatus(true);
+			//loadingStatus(true);
 
 			PreferenceHelper preferenceHelper = new PreferenceHelper();
 			String sessionId = preferenceHelper.getSessionId();

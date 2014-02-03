@@ -3,14 +3,16 @@
     package="com.andybotting.oystermate"
     android:installLocation="auto"
     android:versionCode="0402"
-    android:versionName="0.4.2" >
+    android:versionName="0.4.2"
+    android:theme="@style/Theme.OysterMateStyle" >
 
     <!-- Application Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Require Android 2.1 (API level 7) for ActionBarSherlock -->
     <uses-sdk
-        android:minSdkVersion="7"
-        android:targetSdkVersion="10" />
+        android:minSdkVersion="14"
+        android:targetSdkVersion="19" />
 
     <!-- GoogleTV support -->
     <uses-feature

@@ -44,11 +44,7 @@
     <color name="background1">#ffffffff</color>
     <color name="background2">#ffd5ddeb</color>
     <color name="background3">#ffe3e8f1</color>
-
-    <drawable name="white">#ffffffff</drawable>
-	<drawable name="black">#ff000000</drawable>
-	<drawable name="gray">#ff606060</drawable>
-	<drawable name="aqua">#ff007bff</drawable>
-	<drawable name="red">#ffff0000</drawable>
-
+    
+	<color name="white">#ffffffff</color>
+	<color name="black">#ff000000</color>
 </resources>
